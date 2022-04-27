@@ -1,10 +1,10 @@
 import {render} from '../render.js';
-import EventSectionView from "../view/event-section-view";
-import EventListView from "../view/event-list-view";
-import SortView from "../view/sort-view";
-import EventEditView from "../view/event-edit-view";
-import EventView from "../view/event-view";
-import EventAddView from "../view/event-add-view";
+import EventSectionView from '../view/event-section-view';
+import EventListView from '../view/event-list-view';
+import SortView from '../view/sort-view';
+import EventEditView from '../view/event-edit-view';
+import EventView from '../view/event-view';
+import EventAddView from '../view/event-add-view';
 
 export default class EventPresenter {
   eventComponent = new EventSectionView();
