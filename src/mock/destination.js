@@ -19,23 +19,23 @@ export const generateDestination = () => ({
   name: generateName(),
   pictures: [
     {
-      src: 'http://picsum.photos/248/152?r=' + getRandomInteger(0, 1000),
+      src: `http://picsum.photos/248/152?r=${getRandomInteger(0, 1000)}`,
       description: generateDescription()
     },
     {
-      src: 'http://picsum.photos/248/152?r=' + getRandomInteger(0, 1000),
+      src: `http://picsum.photos/248/152?r=${getRandomInteger(0, 1000)}`,
       description: generateDescription()
     },
     {
-      src: 'http://picsum.photos/248/152?r=' + getRandomInteger(0, 1000),
+      src: `http://picsum.photos/248/152?r=${getRandomInteger(0, 1000)}`,
       description: generateDescription()
     },
     {
-      src: 'http://picsum.photos/248/152?r=' + getRandomInteger(0, 1000),
+      src: `http://picsum.photos/248/152?r=${getRandomInteger(0, 1000)}`,
       description: generateDescription()
     },
     {
-      src: 'http://picsum.photos/248/152?r=' + getRandomInteger(0, 1000),
+      src: `http://picsum.photos/248/152?r=${getRandomInteger(0, 1000)}`,
       description: generateDescription()
     }
   ]

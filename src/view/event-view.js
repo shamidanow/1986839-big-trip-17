@@ -7,7 +7,7 @@ import dayjs from 'dayjs';
 
 const createOffersTemplate = (offers) => (
   `
-    ${Object.entries(offers).map(([key, offer]) =>
+    ${Object.entries(offers).map(([, offer]) =>
       `<li class="event__offer">
         <span class="event__offer-title">${offer.title}</span>
           &plus;&euro;&nbsp;
@@ -50,7 +50,7 @@ const createEventTemplate = (point) => {
   let hours = date2.diff(date1, 'hours');
   const days = Math.floor(hours / 24);
   hours = hours - (days * 24);
-  const eventDuration = days + 'D ' + hours + 'M';
+  const eventDuration = `${days}D ${hours}M`;
 
   const favoriteClassName = isFavorite
     ? 'event__favorite-btn event__favorite-btn--active'
@@ -63,7 +63,7 @@ const createEventTemplate = (point) => {
       <div class="event">
         <time class="event__date" datetime="${dateFromYearMonth}">${dateFromHumanize}</time>
         <div class="event__type">
-          <img class="event__type-icon" width="42" height="42" src="${type !== '' ? 'img/icons/' + type + '.png' : ''}" alt="Event type icon">
+          <img class="event__type-icon" width="42" height="42" src="${type !== '' ? `img/icons/${type}.png` : ''}" alt="Event type icon">
         </div>
         <h3 class="event__title">${type} ${destination.name}</h3>
         <div class="event__schedule">

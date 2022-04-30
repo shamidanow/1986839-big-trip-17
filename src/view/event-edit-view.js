@@ -5,7 +5,7 @@ import {slashesFullDate} from '../utils.js';
 
 const createOffersTemplate = (offers) => (
   `
-    ${Object.entries(offers).map(([key, offer]) =>
+    ${Object.entries(offers).map(([, offer]) =>
       `<div class="event__offer-selector">
         <input class="event__offer-checkbox  visually-hidden"
             id="event-offer-${offer.title.toLowerCase().replace(' ', '-')}-${offer.id}"
@@ -27,7 +27,7 @@ const createEventTypesTemplate = (types, eventType) => (
     <fieldset class="event__type-group">
       <legend class="visually-hidden">Event type</legend>
 
-      ${Object.entries(types).map(([key, type]) =>
+      ${Object.entries(types).map(([, type]) =>
         `<div class="event__type-item">
           <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${type === eventType ? 'checked' : ''}>
           <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type[0].toUpperCase() + type.substring(1)}</label>
@@ -39,7 +39,7 @@ const createEventTypesTemplate = (types, eventType) => (
 
 const createDestinationsTemplate = (destinations) => (
   `
-    ${Object.entries(destinations).map(([key, destination]) =>
+    ${Object.entries(destinations).map(([, destination]) =>
       `<option value="${destination}"></option>`
     ).join('')}
   `
@@ -47,7 +47,7 @@ const createDestinationsTemplate = (destinations) => (
 
 const createDestinationPhotosTemplate = (destinationPhotos) => (
   `
-    ${Object.entries(destinationPhotos).map(([key, photo]) =>
+    ${Object.entries(destinationPhotos).map(([, photo]) =>
       `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`
     ).join('')}
   `
@@ -68,7 +68,6 @@ const createEventEditTemplate = (point = {}) => {
           }
         ]
       },
-      isFavorite = false,
       offers = [
         {
           id: 0,
@@ -106,7 +105,7 @@ const createEventEditTemplate = (point = {}) => {
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-1">
               <span class="visually-hidden">Choose event type</span>
-              <img class="event__type-icon" width="17" height="17" src="${type !== '' ? 'img/icons/' + type + '.png' : ''}" alt="Event type icon">
+              <img class="event__type-icon" width="17" height="17" src="${type !== '' ? `img/icons/${type}.png` : ''}" alt="Event type icon">
             </label>
             <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -167,7 +166,7 @@ const createEventEditTemplate = (point = {}) => {
         </section>
       </form>
     </li>`
-  )
+  );
 };
 
 export default class EventEditView {
