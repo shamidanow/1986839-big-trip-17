@@ -6,7 +6,7 @@ import {slashesFullDate} from '../utils.js';
 const createOffersTemplate = (offers) => (
   `
     ${Object.entries(offers).map(([, offer]) =>
-      `<div class="event__offer-selector">
+    `<div class="event__offer-selector">
         <input class="event__offer-checkbox  visually-hidden"
             id="event-offer-${offer.title.toLowerCase().replace(' ', '-')}-${offer.id}"
             type="checkbox"
@@ -18,7 +18,7 @@ const createOffersTemplate = (offers) => (
           <span class="event__offer-price">${offer.price}</span>
         </label>
       </div>`
-    ).join('')}
+  ).join('')}
   `
 );
 
@@ -28,11 +28,11 @@ const createEventTypesTemplate = (types, eventType) => (
       <legend class="visually-hidden">Event type</legend>
 
       ${Object.entries(types).map(([, type]) =>
-        `<div class="event__type-item">
+    `<div class="event__type-item">
           <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${type === eventType ? 'checked' : ''}>
           <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type[0].toUpperCase() + type.substring(1)}</label>
         </div>`
-      ).join('')}
+  ).join('')}
     </fieldset>
   `
 );
@@ -40,42 +40,42 @@ const createEventTypesTemplate = (types, eventType) => (
 const createDestinationsTemplate = (destinations) => (
   `
     ${Object.entries(destinations).map(([, destination]) =>
-      `<option value="${destination}"></option>`
-    ).join('')}
+    `<option value="${destination}"></option>`
+  ).join('')}
   `
 );
 
 const createDestinationPhotosTemplate = (destinationPhotos) => (
   `
     ${Object.entries(destinationPhotos).map(([, photo]) =>
-      `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`
-    ).join('')}
+    `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`
+  ).join('')}
   `
 );
 
 const createEventEditTemplate = (point = {}) => {
   const {
-      basePrice = 0,
-      dateFrom = null,
-      dateTo = null,
-      destination = {
-        description: '',
-        name: '',
-        pictures: [
-          {
-            src: '' ,
-            description: ''
-          }
-        ]
-      },
-      offers = [
+    basePrice = 0,
+    dateFrom = null,
+    dateTo = null,
+    destination = {
+      description: '',
+      name: '',
+      pictures: [
         {
-          id: 0,
-          title: '',
-          price: 0
+          src: '' ,
+          description: ''
         }
-      ],
-      type = ''
+      ]
+    },
+    offers = [
+      {
+        id: 0,
+        title: '',
+        price: 0
+      }
+    ],
+    type = ''
   } = point;
 
   const dateFromSlashes = dateFrom !== null

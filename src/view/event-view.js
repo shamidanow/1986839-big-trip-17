@@ -8,12 +8,12 @@ import dayjs from 'dayjs';
 const createOffersTemplate = (offers) => (
   `
     ${Object.entries(offers).map(([, offer]) =>
-      `<li class="event__offer">
+    `<li class="event__offer">
         <span class="event__offer-title">${offer.title}</span>
           &plus;&euro;&nbsp;
         <span class="event__offer-price">${offer.price}</span>
       </li>`
-    ).join('')}
+  ).join('')}
   `
 );
 
@@ -92,7 +92,7 @@ const createEventTemplate = (point) => {
         </button>
       </div>
     </li>`
-  )
+  );
 };
 
 export default class EventView {
