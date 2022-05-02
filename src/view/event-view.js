@@ -5,17 +5,17 @@ import {yearMonthDate} from '../utils.js';
 import {fullDate} from '../utils.js';
 import dayjs from 'dayjs';
 
-const createOffersTemplate = (offers) => (
+const createOfferTemplate = (offer) => {
+  return `
+    <li class="event__offer">
+      <span class="event__offer-title">${offer.title}</span>
+        &plus;&euro;&nbsp;
+      <span class="event__offer-price">${offer.price}</span>
+    </li>
   `
-    ${Object.entries(offers).map(([, offer]) =>
-    `<li class="event__offer">
-        <span class="event__offer-title">${offer.title}</span>
-          &plus;&euro;&nbsp;
-        <span class="event__offer-price">${offer.price}</span>
-      </li>`
-  ).join('')}
-  `
-);
+};
+
+const createOffersTemplate = (offers) => offers.map(createOfferTemplate).join('');
 
 const createEventTemplate = (point) => {
   const {basePrice, dateFrom, dateTo, destination, isFavorite, offers, type} = point;

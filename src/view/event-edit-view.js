@@ -1,55 +1,62 @@
 import {createElement} from '../render.js';
+import {slashesFullDate} from '../utils.js';
 import {POINT_TYPES} from '../const.js';
 import {DESTINATION_NAMES} from '../const.js';
-import {slashesFullDate} from '../utils.js';
 
-const createOffersTemplate = (offers) => (
+const createOfferTemplate = (offer) => {
+  const prefix = offer.title.toLowerCase().replace(' ', '-');
+
+  return `
+    <div class="event__offer-selector">
+      <input class="event__offer-checkbox  visually-hidden"
+          id="event-offer-${prefix}-${offer.id}"
+          type="checkbox"
+          name="event-offer-${prefix}"
+      >
+      <label class="event__offer-label" for="event-offer-${prefix}-${offer.id}">
+        <span class="event__offer-title">${offer.title}</span>
+        &plus;&euro;&nbsp;
+        <span class="event__offer-price">${offer.price}</span>
+      </label>
+    </div>
   `
-    ${Object.entries(offers).map(([, offer]) =>
-    `<div class="event__offer-selector">
-        <input class="event__offer-checkbox  visually-hidden"
-            id="event-offer-${offer.title.toLowerCase().replace(' ', '-')}-${offer.id}"
-            type="checkbox"
-            name="event-offer-${offer.title.toLowerCase().replace(' ', '-')}"
-        >
-        <label class="event__offer-label" for="event-offer-${offer.title.toLowerCase().replace(' ', '-')}-${offer.id}">
-          <span class="event__offer-title">${offer.title}</span>
-          &plus;&euro;&nbsp;
-          <span class="event__offer-price">${offer.price}</span>
-        </label>
-      </div>`
-  ).join('')}
-  `
-);
+};
+
+const createOffersTemplate = (offers) => offers.map(createOfferTemplate).join('');
 
 const createEventTypesTemplate = (types, eventType) => (
   `
     <fieldset class="event__type-group">
       <legend class="visually-hidden">Event type</legend>
 
-      ${Object.entries(types).map(([, type]) =>
-    `<div class="event__type-item">
-          <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${type === eventType ? 'checked' : ''}>
-          <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type[0].toUpperCase() + type.substring(1)}</label>
-        </div>`
-  ).join('')}
+      <!--Не стал выносить в отдельную функцию, т.к. в поле input дополнительно нужна переменная eventType для выделенного элемента-->
+      ${types.map(type => {
+        const capitalizedValue = type[0].toUpperCase() + type.substring(1);
+
+        return `
+          <div class="event__type-item">
+            <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${type === eventType ? 'checked' : ''}>
+            <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${capitalizedValue}</label>
+          </div>
+        `
+      }).join('')}
     </fieldset>
   `
 );
 
 const createDestinationsTemplate = (destinations) => (
   `
-    ${Object.entries(destinations).map(([, destination]) =>
-    `<option value="${destination}"></option>`
-  ).join('')}
+    ${destinations.map(destination => {
+      return `<option value="${destination}"></option>`
+    }).join('')}
   `
 );
 
 const createDestinationPhotosTemplate = (destinationPhotos) => (
   `
-    ${Object.entries(destinationPhotos).map(([, photo]) =>
-    `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`
-  ).join('')}
+    ${destinationPhotos.map(photo => {
+      return `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`
+    }).join('')}
   `
 );
 
@@ -96,7 +103,6 @@ const createEventEditTemplate = (point = {}) => {
   const eventTypesTemplate = createEventTypesTemplate(POINT_TYPES, type);
   const destinationsTemplate = createDestinationsTemplate(DESTINATION_NAMES);
   const destinationPhotosTemplate = createDestinationPhotosTemplate(destination.pictures);
-
 
   return (
     `<li class="trip-events__item">
