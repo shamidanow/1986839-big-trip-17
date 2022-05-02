@@ -68,20 +68,9 @@ const createEventEditTemplate = (point = {}) => {
     destination = {
       description: '',
       name: '',
-      pictures: [
-        {
-          src: '' ,
-          description: ''
-        }
-      ]
+      pictures: []
     },
-    offers = [
-      {
-        id: 0,
-        title: '',
-        price: 0
-      }
-    ],
+    offers = [],
     type = ''
   } = point;
 
