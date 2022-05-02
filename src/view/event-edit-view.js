@@ -19,7 +19,7 @@ const createOfferTemplate = (offer) => {
         <span class="event__offer-price">${offer.price}</span>
       </label>
     </div>
-  `
+  `;
 };
 
 const createOffersTemplate = (offers) => offers.map(createOfferTemplate).join('');
@@ -30,33 +30,29 @@ const createEventTypesTemplate = (types, eventType) => (
       <legend class="visually-hidden">Event type</legend>
 
       <!--Не стал выносить в отдельную функцию, т.к. в поле input дополнительно нужна переменная eventType для выделенного элемента-->
-      ${types.map(type => {
-        const capitalizedValue = type[0].toUpperCase() + type.substring(1);
+      ${types.map((type) => {
+    const capitalizedValue = type[0].toUpperCase() + type.substring(1);
 
-        return `
+    return `
           <div class="event__type-item">
             <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${type === eventType ? 'checked' : ''}>
             <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${capitalizedValue}</label>
           </div>
-        `
-      }).join('')}
+        `;
+  }).join('')}
     </fieldset>
   `
 );
 
 const createDestinationsTemplate = (destinations) => (
   `
-    ${destinations.map(destination => {
-      return `<option value="${destination}"></option>`
-    }).join('')}
+    ${destinations.map((destination) => `<option value="${destination}"></option>`).join('')}
   `
 );
 
 const createDestinationPhotosTemplate = (destinationPhotos) => (
   `
-    ${destinationPhotos.map(photo => {
-      return `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`
-    }).join('')}
+    ${destinationPhotos.map((photo) => `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`).join('')}
   `
 );
 
