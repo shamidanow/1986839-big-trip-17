@@ -9,10 +9,16 @@ const getRandomInteger = (a = 0, b = 1) => {
   return Math.floor(lower + Math.random() * (upper - lower + 1));
 };
 
+const getRandomArrayElement = (array) => {
+  const randomIndex = getRandomInteger(0, array.length - 1);
+
+  return array[randomIndex];
+};
+
 const humanizeDate = (date) => dayjs(date).format('MMM D');
 const hoursMinutesDate = (date) => dayjs(date).format('hh:mm');
 const yearMonthDate = (date) => dayjs(date).format('YYYY-MM-DD');
 const fullDate = (date) => dayjs(date).format('YYYY-MM-DDTHH:mm');
 const slashesFullDate = (date) => dayjs(date).format('DD/MM/YY HH:mm');
 
-export {getRandomInteger, humanizeDate, hoursMinutesDate, yearMonthDate, fullDate, slashesFullDate};
+export {getRandomInteger, getRandomArrayElement, humanizeDate, hoursMinutesDate, yearMonthDate, fullDate, slashesFullDate};

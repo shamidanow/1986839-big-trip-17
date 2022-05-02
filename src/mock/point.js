@@ -1,28 +1,9 @@
 import {getRandomInteger} from '../utils.js';
+import {getRandomArrayElement} from '../utils';
 import {POINT_TYPES} from '../const.js';
 import {generateOffer} from './offer';
 import {generateDestination} from './destination';
 import dayjs from 'dayjs';
-
-const getRandomDestination = () => {
-  const destinations = Array.from({length: 10}, generateDestination);
-  const randomIndex = getRandomInteger(0, destinations.length - 1);
-
-  return destinations[randomIndex];
-};
-
-const getRandomOffers = () => {
-  const offers = Array.from({length: 20}, generateOffer);
-  const randomIndex = getRandomInteger(0, offers.length - 1);
-
-  return offers[randomIndex].offers;
-};
-
-const getRandomType = () => {
-  const randomIndex = getRandomInteger(0, POINT_TYPES.length - 1);
-
-  return POINT_TYPES[randomIndex];
-};
 
 const generateDate = () => {
   const daysGap = getRandomInteger(0, 7);
@@ -38,8 +19,8 @@ export const generatePoint = () => ({
   basePrice: getRandomInteger(100, 1100),
   dateFrom: generateDate(),
   dateTo: generateDate(),
-  destination: getRandomDestination(),
+  destination: getRandomArrayElement(Array.from({length: 10}, generateDestination)),
   isFavorite: Boolean(getRandomInteger(0, 1)),
-  offers: getRandomOffers(),
-  type: getRandomType()
+  offers: getRandomArrayElement(Array.from({length: 20}, generateOffer)).offers,
+  type: getRandomArrayElement(POINT_TYPES)
 });
