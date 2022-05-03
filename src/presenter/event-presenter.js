@@ -21,12 +21,16 @@ export default class EventPresenter {
 
     render(this.#eventComponent, this.#eventContainer);
     render(new SortView(), this.#eventComponent.element);
-
     render(this.#eventListComponent, this.#eventComponent.element);
-    render(new EventEditView(this.#eventPoints[0]), this.#eventListComponent.element);
 
-    for (let i = 1; i < this.#eventPoints.length; i++) {
-      render(new EventView(this.#eventPoints[i]), this.#eventListComponent.element);
+    for (let i = 0; i < this.#eventPoints.length; i++) {
+      this.#renderEvent(this.#eventPoints[i]);
     }
+  };
+
+  #renderEvent = (event) => {
+    const eventComponent = new EventView(event);
+
+    render(eventComponent, this.#eventListComponent.element);
   };
 }
