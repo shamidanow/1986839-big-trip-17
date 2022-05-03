@@ -40,13 +40,28 @@ export default class EventPresenter {
       this.#eventListComponent.element.replaceChild(eventComponent.element, eventEditComponent.element);
     };
 
+    const onEscKeyDown = (evt) => {
+      if (evt.key === 'Escape' || evt.key === 'Esc') {
+        evt.preventDefault();
+        replaceFormToCard();
+        document.removeEventListener('keydown', onEscKeyDown);
+      }
+    };
+
     eventComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
       replaceCardToForm();
+      document.addEventListener('keydown', onEscKeyDown);
     });
 
     eventEditComponent.element.querySelector('form').addEventListener('submit', (evt) => {
       evt.preventDefault();
       replaceFormToCard();
+      document.removeEventListener('keydown', onEscKeyDown);
+    });
+
+    eventEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+      replaceFormToCard();
+      document.removeEventListener('keydown', onEscKeyDown);
     });
 
     render(eventComponent, this.#eventListComponent.element);
