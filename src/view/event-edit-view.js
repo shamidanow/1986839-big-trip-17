@@ -2,9 +2,11 @@ import {createElement} from '../render.js';
 import {slashesFullDate} from '../utils.js';
 import {POINT_TYPES} from '../const.js';
 import {DESTINATION_NAMES} from '../const.js';
+import {OFFERS} from '../mock/offers';
 
-const createOfferTemplate = (offer) => {
+const createOfferTemplate = (offer, pointOffers) => {
   const prefix = offer.title.toLowerCase().replace(' ', '-');
+  const checked = pointOffers.includes(offer.id) ? 'checked' : '';
 
   return `
     <div class="event__offer-selector">
@@ -12,6 +14,7 @@ const createOfferTemplate = (offer) => {
           id="event-offer-${prefix}-${offer.id}"
           type="checkbox"
           name="event-offer-${prefix}"
+          ${checked}
       >
       <label class="event__offer-label" for="event-offer-${prefix}-${offer.id}">
         <span class="event__offer-title">${offer.title}</span>
@@ -22,24 +25,25 @@ const createOfferTemplate = (offer) => {
   `;
 };
 
-const createOffersTemplate = (offers) => offers.map(createOfferTemplate).join('');
+const createOffersTemplate = (pointTypeOffers, pointOffers) => pointTypeOffers.map((offer) => createOfferTemplate(offer, pointOffers)).join('');
+
+const createEventTypeItemTemplate = (type, isChecked) => {
+  const capitalizedValue = type[0].toUpperCase() + type.substring(1);
+
+  return `
+    <div class="event__type-item">
+      <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${isChecked ? 'checked' : ''}>
+      <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${capitalizedValue}</label>
+    </div>
+  `;
+};
 
 const createEventTypesTemplate = (types, eventType) => (
   `
     <fieldset class="event__type-group">
       <legend class="visually-hidden">Event type</legend>
 
-      <!--Не стал выносить в отдельную функцию, т.к. в поле input дополнительно нужна переменная eventType для выделенного элемента-->
-      ${types.map((type) => {
-    const capitalizedValue = type[0].toUpperCase() + type.substring(1);
-
-    return `
-          <div class="event__type-item">
-            <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${type === eventType ? 'checked' : ''}>
-            <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${capitalizedValue}</label>
-          </div>
-        `;
-  }).join('')}
+      ${types.map((type) => createEventTypeItemTemplate(type, type === eventType)).join('')}
     </fieldset>
   `
 );
@@ -84,7 +88,8 @@ const createEventEditTemplate = (point = {}) => {
       </button>`
     : '';
 
-  const offersTemplate = createOffersTemplate(offers);
+  const pointTypeOffers = OFFERS.find((offer) => offer.type === type).offers;
+  const offersTemplate = createOffersTemplate(pointTypeOffers, offers);
   const eventTypesTemplate = createEventTypesTemplate(POINT_TYPES, type);
   const destinationsTemplate = createDestinationsTemplate(DESTINATION_NAMES);
   const destinationPhotosTemplate = createDestinationPhotosTemplate(destination.pictures);

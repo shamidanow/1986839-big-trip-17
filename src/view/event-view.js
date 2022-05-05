@@ -3,6 +3,7 @@ import {humanizeDate} from '../utils.js';
 import {hoursMinutesDate} from '../utils.js';
 import {yearMonthDate} from '../utils.js';
 import {fullDate} from '../utils.js';
+import {OFFERS} from '../mock/offers';
 import dayjs from 'dayjs';
 
 const createOfferTemplate = (offer) => `
@@ -54,7 +55,9 @@ const createEventTemplate = (point) => {
     ? 'event__favorite-btn event__favorite-btn--active'
     : 'event__favorite-btn';
 
-  const offersTemplate = createOffersTemplate(offers);
+  const pointTypeOffer = OFFERS.find((offer) => offer.type === type);
+  const pointOffers = pointTypeOffer.offers.filter((v) => offers.some((v2) => v.id === v2));
+  const offersTemplate = createOffersTemplate(pointOffers);
 
   return (
     `<li class="trip-events__item">
