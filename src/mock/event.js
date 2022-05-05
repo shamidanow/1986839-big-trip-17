@@ -1,6 +1,6 @@
 import {getRandomInteger} from '../utils.js';
 import {getRandomArrayElement} from '../utils';
-import {POINT_TYPES} from '../const.js';
+import {EVENT_TYPES} from '../const.js';
 import {OFFERS} from './offers';
 import {generateDestination} from './destination';
 import dayjs from 'dayjs';
@@ -14,14 +14,14 @@ const generateDate = (dayBegin, dayEnd) => {
   return dayjs().add(daysGap, 'day').add(hoursGap, 'hour').add(minutesGap, 'minute').add(secondsGap, 'second').toDate();
 };
 
-export const generatePoint = () => {
-  const type = getRandomArrayElement(POINT_TYPES);
-  const pointTypeOffer = OFFERS.find((offer) => offer.type === type);
+export const generateEvent = () => {
+  const type = getRandomArrayElement(EVENT_TYPES);
+  const eventTypeOffer = OFFERS.find((offer) => offer.type === type);
   const offerSelectedIds = [];
-  if (pointTypeOffer.offers.length > 0) {
+  if (eventTypeOffer.offers.length > 0) {
     //для тестовых данных сформируем до двух элементов offers
-    const offerFirstId = getRandomArrayElement(pointTypeOffer.offers).id;
-    const offerSecondId = getRandomArrayElement(pointTypeOffer.offers).id;
+    const offerFirstId = getRandomArrayElement(eventTypeOffer.offers).id;
+    const offerSecondId = getRandomArrayElement(eventTypeOffer.offers).id;
     offerSelectedIds.push(offerFirstId);
     if (offerFirstId !== offerSecondId) {
       offerSelectedIds.push(offerSecondId);

@@ -8,20 +8,20 @@ import NoEventView from '../view/no-event-view';
 
 export default class EventPresenter {
   #eventContainer = null;
-  #pointsModel = null;
+  #eventsModel = null;
 
   #eventComponent = new EventSectionView();
   #eventListComponent = new EventListView();
 
-  #eventPoints = [];
+  #events = [];
 
-  constructor(eventContainer, pointsModel) {
+  constructor(eventContainer, eventsModel) {
     this.#eventContainer = eventContainer;
-    this.#pointsModel = pointsModel;
+    this.#eventsModel = eventsModel;
   }
 
   init = () => {
-    this.#eventPoints = [...this.#pointsModel.points];
+    this.#events = [...this.#eventsModel.events];
 
     this.#renderEventSection();
   };
@@ -68,14 +68,14 @@ export default class EventPresenter {
   #renderEventSection = () => {
     render(this.#eventComponent, this.#eventContainer);
 
-    if (this.#eventPoints.length === 0) {
+    if (this.#events.length === 0) {
       render(new NoEventView(), this.#eventComponent.element);
     } else {
       render(new SortView(), this.#eventComponent.element);
       render(this.#eventListComponent, this.#eventComponent.element);
 
-      for (let i = 0; i < this.#eventPoints.length; i++) {
-        this.#renderEvent(this.#eventPoints[i]);
+      for (let i = 0; i < this.#events.length; i++) {
+        this.#renderEvent(this.#events[i]);
       }
     }
   };

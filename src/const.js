@@ -1,4 +1,4 @@
-const POINT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
+const EVENT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 const DESTINATION_NAMES = ['Amsterdam', 'Chamonix', 'Geneva'];
 const DESTINATION_DESCRIPTIONS = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
@@ -8,6 +8,6 @@ const DESTINATION_DESCRIPTIONS = [
   'Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.'
 ];
 
-export {POINT_TYPES};
+export {EVENT_TYPES};
 export {DESTINATION_NAMES};
 export {DESTINATION_DESCRIPTIONS};

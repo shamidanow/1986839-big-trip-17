@@ -1,12 +1,12 @@
 import {createElement} from '../render.js';
 import {slashesFullDate} from '../utils.js';
-import {POINT_TYPES} from '../const.js';
+import {EVENT_TYPES} from '../const.js';
 import {DESTINATION_NAMES} from '../const.js';
 import {OFFERS} from '../mock/offers';
 
-const createOfferTemplate = (offer, pointOffers) => {
+const createOfferTemplate = (offer, eventOffers) => {
   const prefix = offer.title.toLowerCase().replace(' ', '-');
-  const checked = pointOffers.includes(offer.id) ? 'checked' : '';
+  const checked = eventOffers.includes(offer.id) ? 'checked' : '';
 
   return `
     <div class="event__offer-selector">
@@ -25,7 +25,7 @@ const createOfferTemplate = (offer, pointOffers) => {
   `;
 };
 
-const createOffersTemplate = (pointTypeOffers, pointOffers) => pointTypeOffers.map((offer) => createOfferTemplate(offer, pointOffers)).join('');
+const createOffersTemplate = (eventTypeOffers, eventOffers) => eventTypeOffers.map((offer) => createOfferTemplate(offer, eventOffers)).join('');
 
 const createEventTypeItemTemplate = (type, isChecked) => {
   const capitalizedValue = type[0].toUpperCase() + type.substring(1);
@@ -60,7 +60,7 @@ const createDestinationPhotosTemplate = (destinationPhotos) => (
   `
 );
 
-const createEventEditTemplate = (point = {}) => {
+const createEventEditTemplate = (event = {}) => {
   const {
     basePrice = 0,
     dateFrom = null,
@@ -72,7 +72,7 @@ const createEventEditTemplate = (point = {}) => {
     },
     offers = [],
     type = ''
-  } = point;
+  } = event;
 
   const dateFromSlashes = dateFrom !== null
     ? slashesFullDate(dateFrom)
@@ -82,15 +82,15 @@ const createEventEditTemplate = (point = {}) => {
     ? slashesFullDate(dateTo)
     : '';
 
-  const buttonEditTemplate = Object.keys(point).length !== 0
+  const buttonEditTemplate = Object.keys(event).length !== 0
     ? `<button class="event__rollup-btn" type="button">
         <span class="visually-hidden">Open event</span>
       </button>`
     : '';
 
-  const pointTypeOffers = OFFERS.find((offer) => offer.type === type).offers;
-  const offersTemplate = createOffersTemplate(pointTypeOffers, offers);
-  const eventTypesTemplate = createEventTypesTemplate(POINT_TYPES, type);
+  const eventTypeOffers = OFFERS.find((offer) => offer.type === type).offers;
+  const offersTemplate = createOffersTemplate(eventTypeOffers, offers);
+  const eventTypesTemplate = createEventTypesTemplate(EVENT_TYPES, type);
   const destinationsTemplate = createDestinationsTemplate(DESTINATION_NAMES);
   const destinationPhotosTemplate = createDestinationPhotosTemplate(destination.pictures);
 
@@ -137,7 +137,7 @@ const createEventEditTemplate = (point = {}) => {
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">${Object.keys(point).length === 0 ? 'Cancel' : 'Delete'}</button>
+          <button class="event__reset-btn" type="reset">${Object.keys(event).length === 0 ? 'Cancel' : 'Delete'}</button>
           ${buttonEditTemplate}
         </header>
         <section class="event__details">
@@ -167,14 +167,14 @@ const createEventEditTemplate = (point = {}) => {
 
 export default class EventEditView {
   #element = null;
-  #point = null;
+  #event = null;
 
-  constructor(point) {
-    this.#point = point;
+  constructor(event) {
+    this.#event = event;
   }
 
   get template() {
-    return createEventEditTemplate(this.#point);
+    return createEventEditTemplate(this.#event);
   }
 
   get element() {

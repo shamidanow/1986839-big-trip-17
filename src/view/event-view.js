@@ -16,8 +16,8 @@ const createOfferTemplate = (offer) => `
 
 const createOffersTemplate = (offers) => offers.map(createOfferTemplate).join('');
 
-const createEventTemplate = (point) => {
-  const {basePrice, dateFrom, dateTo, destination, isFavorite, offers, type} = point;
+const createEventTemplate = (event) => {
+  const {basePrice, dateFrom, dateTo, destination, isFavorite, offers, type} = event;
 
   const dateFromHumanize = dateFrom !== null
     ? humanizeDate(dateFrom)
@@ -55,9 +55,9 @@ const createEventTemplate = (point) => {
     ? 'event__favorite-btn event__favorite-btn--active'
     : 'event__favorite-btn';
 
-  const pointTypeOffer = OFFERS.find((offer) => offer.type === type);
-  const pointOffers = pointTypeOffer.offers.filter((v) => offers.some((v2) => v.id === v2));
-  const offersTemplate = createOffersTemplate(pointOffers);
+  const eventTypeOffer = OFFERS.find((offer) => offer.type === type);
+  const eventOffers = eventTypeOffer.offers.filter((v) => offers.some((v2) => v.id === v2));
+  const offersTemplate = createOffersTemplate(eventOffers);
 
   return (
     `<li class="trip-events__item">
@@ -98,14 +98,14 @@ const createEventTemplate = (point) => {
 
 export default class EventView {
   #element = null;
-  #point = null;
+  #event = null;
 
-  constructor(point) {
-    this.#point = point;
+  constructor(event) {
+    this.#event = event;
   }
 
   get template() {
-    return createEventTemplate(this.#point);
+    return createEventTemplate(this.#event);
   }
 
   get element() {
