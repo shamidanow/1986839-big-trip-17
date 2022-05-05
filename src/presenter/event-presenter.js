@@ -15,23 +15,15 @@ export default class EventPresenter {
 
   #eventPoints = [];
 
-  init = (eventContainer, pointsModel) => {
+  constructor(eventContainer, pointsModel) {
     this.#eventContainer = eventContainer;
     this.#pointsModel = pointsModel;
+  }
+
+  init = () => {
     this.#eventPoints = [...this.#pointsModel.points];
 
-    render(this.#eventComponent, this.#eventContainer);
-
-    if (this.#eventPoints.length === 0) {
-      render(new NoEventView(), this.#eventComponent.element);
-    } else {
-      render(new SortView(), this.#eventComponent.element);
-      render(this.#eventListComponent, this.#eventComponent.element);
-
-      for (let i = 0; i < this.#eventPoints.length; i++) {
-        this.#renderEvent(this.#eventPoints[i]);
-      }
-    }
+    this.#renderEventSection();
   };
 
   #renderEvent = (event) => {
@@ -71,5 +63,20 @@ export default class EventPresenter {
     });
 
     render(eventComponent, this.#eventListComponent.element);
+  };
+
+  #renderEventSection = () => {
+    render(this.#eventComponent, this.#eventContainer);
+
+    if (this.#eventPoints.length === 0) {
+      render(new NoEventView(), this.#eventComponent.element);
+    } else {
+      render(new SortView(), this.#eventComponent.element);
+      render(this.#eventListComponent, this.#eventComponent.element);
+
+      for (let i = 0; i < this.#eventPoints.length; i++) {
+        this.#renderEvent(this.#eventPoints[i]);
+      }
+    }
   };
 }

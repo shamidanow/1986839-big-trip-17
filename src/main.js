@@ -13,10 +13,10 @@ const sitePageMainElement = document.querySelector('.page-body__page-main');
 const sitePageBodyElement = sitePageMainElement.querySelector('.page-body__container');
 
 const pointsModel = new PointsModel();
-const eventPresenter = new EventPresenter();
+const eventPresenter = new EventPresenter(sitePageBodyElement, pointsModel);
 
 render(new FilterView(), siteFilterElement);
 render(new InfoMainView(), siteInfoElement);
 render(new InfoCostView(), siteInfoElement);
 
-eventPresenter.init(sitePageBodyElement, pointsModel);
+eventPresenter.init();
