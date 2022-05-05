@@ -4,6 +4,7 @@ import EventListView from '../view/event-list-view';
 import SortView from '../view/sort-view';
 import EventEditView from '../view/event-edit-view';
 import EventView from '../view/event-view';
+import NoEventView from '../view/no-event-view';
 
 export default class EventPresenter {
   #eventContainer = null;
@@ -20,11 +21,16 @@ export default class EventPresenter {
     this.#eventPoints = [...this.#pointsModel.points];
 
     render(this.#eventComponent, this.#eventContainer);
-    render(new SortView(), this.#eventComponent.element);
-    render(this.#eventListComponent, this.#eventComponent.element);
 
-    for (let i = 0; i < this.#eventPoints.length; i++) {
-      this.#renderEvent(this.#eventPoints[i]);
+    if (this.#eventPoints.length === 0) {
+      render(new NoEventView(), this.#eventComponent.element);
+    } else {
+      render(new SortView(), this.#eventComponent.element);
+      render(this.#eventListComponent, this.#eventComponent.element);
+
+      for (let i = 0; i < this.#eventPoints.length; i++) {
+        this.#renderEvent(this.#eventPoints[i]);
+      }
     }
   };
 
