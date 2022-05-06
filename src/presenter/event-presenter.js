@@ -4,28 +4,26 @@ import EventListView from '../view/event-list-view';
 import SortView from '../view/sort-view';
 import EventEditView from '../view/event-edit-view';
 import EventView from '../view/event-view';
+import NoEventView from '../view/no-event-view';
 
 export default class EventPresenter {
   #eventContainer = null;
-  #pointsModel = null;
+  #eventsModel = null;
 
   #eventComponent = new EventSectionView();
   #eventListComponent = new EventListView();
 
-  #eventPoints = [];
+  #events = [];
 
-  init = (eventContainer, pointsModel) => {
+  constructor(eventContainer, eventsModel) {
     this.#eventContainer = eventContainer;
-    this.#pointsModel = pointsModel;
-    this.#eventPoints = [...this.#pointsModel.points];
+    this.#eventsModel = eventsModel;
+  }
 
-    render(this.#eventComponent, this.#eventContainer);
-    render(new SortView(), this.#eventComponent.element);
-    render(this.#eventListComponent, this.#eventComponent.element);
+  init = () => {
+    this.#events = [...this.#eventsModel.events];
 
-    for (let i = 0; i < this.#eventPoints.length; i++) {
-      this.#renderEvent(this.#eventPoints[i]);
-    }
+    this.#renderEventSection();
   };
 
   #renderEvent = (event) => {
@@ -65,5 +63,20 @@ export default class EventPresenter {
     });
 
     render(eventComponent, this.#eventListComponent.element);
+  };
+
+  #renderEventSection = () => {
+    render(this.#eventComponent, this.#eventContainer);
+
+    if (this.#events.length === 0) {
+      render(new NoEventView(), this.#eventComponent.element);
+    } else {
+      render(new SortView(), this.#eventComponent.element);
+      render(this.#eventListComponent, this.#eventComponent.element);
+
+      for (let i = 0; i < this.#events.length; i++) {
+        this.#renderEvent(this.#events[i]);
+      }
+    }
   };
 }
