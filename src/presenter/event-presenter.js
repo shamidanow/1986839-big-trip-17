@@ -46,18 +46,17 @@ export default class EventPresenter {
       }
     };
 
-    eventComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    eventComponent.setEditClickHandler(() => {
       replaceCardToForm();
       document.addEventListener('keydown', onEscKeyDown);
     });
 
-    eventEditComponent.element.querySelector('form').addEventListener('submit', (evt) => {
-      evt.preventDefault();
+    eventEditComponent.setFormSubmitHandler(() => {
       replaceFormToCard();
       document.removeEventListener('keydown', onEscKeyDown);
     });
 
-    eventEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    eventEditComponent.setEditClickHandler(() => {
       replaceFormToCard();
       document.removeEventListener('keydown', onEscKeyDown);
     });
