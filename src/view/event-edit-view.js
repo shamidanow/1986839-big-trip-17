@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {slashesFullDate} from '../utils.js';
+import {slashesFullDate} from '../utils/event.js';
 import {EVENT_TYPES} from '../const.js';
 import {DESTINATION_NAMES} from '../const.js';
 import {OFFERS} from '../mock/offers';
@@ -88,13 +88,8 @@ const createEventEditTemplate = (event = {}) => {
     type = ''
   } = event;
 
-  const dateFromSlashes = dateFrom !== null
-    ? slashesFullDate(dateFrom)
-    : '';
-
-  const dateToSlashes = dateTo !== null
-    ? slashesFullDate(dateTo)
-    : '';
+  const dateFromSlashes = slashesFullDate(dateFrom);
+  const dateToSlashes = slashesFullDate(dateTo);
 
   const buttonEditTemplate = Object.keys(event).length !== 0
     ? `<button class="event__rollup-btn" type="button">
@@ -102,7 +97,10 @@ const createEventEditTemplate = (event = {}) => {
       </button>`
     : '';
 
-  const eventTypeOffers = OFFERS.find((offer) => offer.type === type).offers;
+  const eventTypeOffers =
+    OFFERS.find((offer) => offer.type === type)
+      ? OFFERS.find((offer) => offer.type === type).offers
+      : [];
   const offersTemplate = createOffersTemplate(eventTypeOffers, offers);
   const eventTypesTemplate = createEventTypesTemplate(EVENT_TYPES, type);
   const destinationsTemplate = createDestinationsTemplate(DESTINATION_NAMES);

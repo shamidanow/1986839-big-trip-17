@@ -1,4 +1,4 @@
-import {render} from '../framework/render.js';
+import {render, replace} from '../framework/render.js';
 import EventSectionView from '../view/event-section-view';
 import EventListView from '../view/event-list-view';
 import SortView from '../view/sort-view';
@@ -31,11 +31,11 @@ export default class EventPresenter {
     const eventEditComponent = new EventEditView(event);
 
     const replaceCardToForm = () => {
-      this.#eventListComponent.element.replaceChild(eventEditComponent.element, eventComponent.element);
+      replace(eventEditComponent, eventComponent);
     };
 
     const replaceFormToCard = () => {
-      this.#eventListComponent.element.replaceChild(eventComponent.element, eventEditComponent.element);
+      replace(eventComponent, eventEditComponent);
     };
 
     const onEscKeyDown = (evt) => {
@@ -73,8 +73,8 @@ export default class EventPresenter {
       render(new SortView(), this.#eventComponent.element);
       render(this.#eventListComponent, this.#eventComponent.element);
 
-      for (let i = 0; i < this.#events.length; i++) {
-        this.#renderEvent(this.#events[i]);
+      for (const event of this.#events) {
+        this.#renderEvent(event);
       }
     }
   };
