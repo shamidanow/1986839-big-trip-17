@@ -1,8 +1,22 @@
-import {createElement} from '../render.js';
+import AbstractView from '../framework/view/abstract-view.js';
 import {slashesFullDate} from '../utils.js';
 import {EVENT_TYPES} from '../const.js';
 import {DESTINATION_NAMES} from '../const.js';
 import {OFFERS} from '../mock/offers';
+
+const BLANK_EVENT = {
+  basePrice: 0,
+  dateFrom: null,
+  dateTo: null,
+  destination: {
+    description: '',
+    name: '',
+    pictures: []
+  },
+  isFavorite: false,
+  offers: [],
+  type: ''
+};
 
 const createOfferTemplate = (offer, eventOffers) => {
   const prefix = offer.title.toLowerCase().replace(' ', '-');
@@ -165,27 +179,15 @@ const createEventEditTemplate = (event = {}) => {
   );
 };
 
-export default class EventEditView {
-  #element = null;
+export default class EventEditView extends AbstractView {
   #event = null;
 
-  constructor(event) {
+  constructor(event = BLANK_EVENT) {
+    super();
     this.#event = event;
   }
 
   get template() {
     return createEventEditTemplate(this.#event);
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
