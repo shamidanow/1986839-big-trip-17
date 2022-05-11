@@ -7,7 +7,10 @@ const DESTINATION_DESCRIPTIONS = [
   'Fusce tristique felis at fermentum pharetra.',
   'Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum.'
 ];
+const FilterType = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PAST: 'past'
+};
 
-export {EVENT_TYPES};
-export {DESTINATION_NAMES};
-export {DESTINATION_DESCRIPTIONS};
+export {EVENT_TYPES, DESTINATION_NAMES, DESTINATION_DESCRIPTIONS, FilterType};
