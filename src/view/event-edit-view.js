@@ -1,8 +1,22 @@
-import {createElement} from '../render.js';
-import {slashesFullDate} from '../utils.js';
+import AbstractView from '../framework/view/abstract-view.js';
+import {slashesFullDate} from '../utils/event.js';
 import {EVENT_TYPES} from '../const.js';
 import {DESTINATION_NAMES} from '../const.js';
 import {OFFERS} from '../mock/offers';
+
+const BLANK_EVENT = {
+  basePrice: 0,
+  dateFrom: null,
+  dateTo: null,
+  destination: {
+    description: '',
+    name: '',
+    pictures: []
+  },
+  isFavorite: false,
+  offers: [],
+  type: ''
+};
 
 const createOfferTemplate = (offer, eventOffers) => {
   const prefix = offer.title.toLowerCase().replace(' ', '-');
@@ -74,13 +88,8 @@ const createEventEditTemplate = (event = {}) => {
     type = ''
   } = event;
 
-  const dateFromSlashes = dateFrom !== null
-    ? slashesFullDate(dateFrom)
-    : '';
-
-  const dateToSlashes = dateTo !== null
-    ? slashesFullDate(dateTo)
-    : '';
+  const dateFromSlashes = slashesFullDate(dateFrom);
+  const dateToSlashes = slashesFullDate(dateTo);
 
   const buttonEditTemplate = Object.keys(event).length !== 0
     ? `<button class="event__rollup-btn" type="button">
@@ -88,7 +97,10 @@ const createEventEditTemplate = (event = {}) => {
       </button>`
     : '';
 
-  const eventTypeOffers = OFFERS.find((offer) => offer.type === type).offers;
+  const eventTypeOffers =
+    OFFERS.find((offer) => offer.type === type)
+      ? OFFERS.find((offer) => offer.type === type).offers
+      : [];
   const offersTemplate = createOffersTemplate(eventTypeOffers, offers);
   const eventTypesTemplate = createEventTypesTemplate(EVENT_TYPES, type);
   const destinationsTemplate = createDestinationsTemplate(DESTINATION_NAMES);
@@ -165,11 +177,11 @@ const createEventEditTemplate = (event = {}) => {
   );
 };
 
-export default class EventEditView {
-  #element = null;
+export default class EventEditView extends AbstractView {
   #event = null;
 
-  constructor(event) {
+  constructor(event = BLANK_EVENT) {
+    super();
     this.#event = event;
   }
 
@@ -177,15 +189,23 @@ export default class EventEditView {
     return createEventEditTemplate(this.#event);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
+  setEditClickHandler = (callback) => {
+    this._callback.editClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+  };
 
-    return this.#element;
-  }
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.editClick();
+  };
 
-  removeElement() {
-    this.#element = null;
-  }
+  setFormSubmitHandler = (callback) => {
+    this._callback.formSubmit = callback;
+    this.element.querySelector('form').addEventListener('submit', this.#formSubmitHandler);
+  };
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.formSubmit();
+  };
 }

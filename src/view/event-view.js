@@ -1,8 +1,8 @@
-import {createElement} from '../render.js';
-import {humanizeDate} from '../utils.js';
-import {hoursMinutesDate} from '../utils.js';
-import {yearMonthDate} from '../utils.js';
-import {fullDate} from '../utils.js';
+import AbstractView from '../framework/view/abstract-view.js';
+import {humanizeDate} from '../utils/event.js';
+import {hoursMinutesDate} from '../utils/event.js';
+import {yearMonthDate} from '../utils/event.js';
+import {fullDate} from '../utils/event.js';
 import {OFFERS} from '../mock/offers';
 import dayjs from 'dayjs';
 
@@ -19,29 +19,12 @@ const createOffersTemplate = (offers) => offers.map(createOfferTemplate).join(''
 const createEventTemplate = (event) => {
   const {basePrice, dateFrom, dateTo, destination, isFavorite, offers, type} = event;
 
-  const dateFromHumanize = dateFrom !== null
-    ? humanizeDate(dateFrom)
-    : '';
-
-  const dateFromHoursMinutes = dateFrom !== null
-    ? hoursMinutesDate(dateFrom)
-    : '';
-
-  const dateFromYearMonth = dateFrom !== null
-    ? yearMonthDate(dateFrom)
-    : '';
-
-  const dateFromFull = dateFrom !== null
-    ? fullDate(dateFrom)
-    : '';
-
-  const dateToHoursMinutes = dateTo !== null
-    ? hoursMinutesDate(dateTo)
-    : '';
-
-  const dateToFull = dateTo !== null
-    ? fullDate(dateTo)
-    : '';
+  const dateFromHumanize = humanizeDate(dateFrom);
+  const dateFromHoursMinutes = hoursMinutesDate(dateFrom);
+  const dateFromYearMonth = yearMonthDate(dateFrom);
+  const dateFromFull = fullDate(dateFrom);
+  const dateToHoursMinutes = hoursMinutesDate(dateTo);
+  const dateToFull = fullDate(dateTo);
 
   //по примеру с https://stackoverflow.com/questions/66639760/dayjs-diff-between-two-date-in-day-and-hours
   const date1 = dayjs(dateFrom);
@@ -56,7 +39,7 @@ const createEventTemplate = (event) => {
     : 'event__favorite-btn';
 
   const eventTypeOffer = OFFERS.find((offer) => offer.type === type);
-  const eventOffers = eventTypeOffer.offers.filter((v) => offers.some((v2) => v.id === v2));
+  const eventOffers = eventTypeOffer ? eventTypeOffer.offers.filter((v) => offers.some((v2) => v.id === v2)) : [];
   const offersTemplate = createOffersTemplate(eventOffers);
 
   return (
@@ -66,7 +49,7 @@ const createEventTemplate = (event) => {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="${type !== '' ? `img/icons/${type}.png` : ''}" alt="Event type icon">
         </div>
-        <h3 class="event__title">${type} ${destination.name}</h3>
+        <h3 class="event__title">${type} ${destination ? destination.name : ''}</h3>
         <div class="event__schedule">
           <p class="event__time">
             <time class="event__start-time" datetime="${dateFromFull}">${dateFromHoursMinutes}</time>
@@ -96,11 +79,11 @@ const createEventTemplate = (event) => {
   );
 };
 
-export default class EventView {
-  #element = null;
+export default class EventView extends AbstractView {
   #event = null;
 
   constructor(event) {
+    super();
     this.#event = event;
   }
 
@@ -108,15 +91,13 @@ export default class EventView {
     return createEventTemplate(this.#event);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
+  setEditClickHandler = (callback) => {
+    this._callback.editClick = callback;
+    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+  };
 
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
+  #editClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.editClick();
+  };
 }
