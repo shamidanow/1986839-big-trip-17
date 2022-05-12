@@ -3,8 +3,8 @@ import {humanizeDate} from '../utils/event.js';
 import {hoursMinutesDate} from '../utils/event.js';
 import {yearMonthDate} from '../utils/event.js';
 import {fullDate} from '../utils/event.js';
+import {getEventDuration} from '../utils/event.js';
 import {OFFERS} from '../mock/offers';
-import dayjs from 'dayjs';
 
 const createOfferTemplate = (offer) => `
     <li class="event__offer">
@@ -25,14 +25,7 @@ const createEventTemplate = (event) => {
   const dateFromFull = fullDate(dateFrom);
   const dateToHoursMinutes = hoursMinutesDate(dateTo);
   const dateToFull = fullDate(dateTo);
-
-  //по примеру с https://stackoverflow.com/questions/66639760/dayjs-diff-between-two-date-in-day-and-hours
-  const date1 = dayjs(dateFrom);
-  const date2 = dayjs(dateTo);
-  let hours = date2.diff(date1, 'hours');
-  const days = Math.floor(hours / 24);
-  hours = hours - (days * 24);
-  const eventDuration = `${days}D ${hours}M`;
+  const eventDuration = getEventDuration(dateFrom, dateTo);
 
   const favoriteClassName = isFavorite
     ? 'event__favorite-btn event__favorite-btn--active'
