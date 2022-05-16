@@ -1,4 +1,4 @@
-import {render, replace} from '../framework/render.js';
+import {render, RenderPosition, replace} from '../framework/render.js';
 import EventSectionView from '../view/event-section-view';
 import EventListView from '../view/event-list-view';
 import SortView from '../view/sort-view';
@@ -12,6 +12,8 @@ export default class EventPresenter {
 
   #eventComponent = new EventSectionView();
   #eventListComponent = new EventListView();
+  #sortComponent = new SortView();
+  #noEventComponent = new NoEventView();
 
   #events = [];
 
@@ -24,6 +26,10 @@ export default class EventPresenter {
     this.#events = [...this.#eventsModel.events];
 
     this.#renderEventSection();
+  };
+
+  #renderSort = () => {
+    render(this.#sortComponent, this.#eventComponent.element, RenderPosition.AFTERBEGIN);
   };
 
   #renderEvent = (event) => {
@@ -64,18 +70,30 @@ export default class EventPresenter {
     render(eventComponent, this.#eventListComponent.element);
   };
 
+  #renderEvents = (from, to) => {
+    this.#events
+      .slice(from, to)
+      .forEach((event) => this.#renderEvent(event));
+  };
+
+  #renderNoEvents = () => {
+    render(this.#noEventComponent, this.#eventComponent.element, RenderPosition.AFTERBEGIN);
+  };
+
+  #renderEventList = () => {
+    render(this.#eventListComponent, this.#eventComponent.element);
+    this.#renderEvents(0, this.#events.length);
+  };
+
   #renderEventSection = () => {
     render(this.#eventComponent, this.#eventContainer);
 
     if (this.#events.length === 0) {
-      render(new NoEventView(), this.#eventComponent.element);
-    } else {
-      render(new SortView(), this.#eventComponent.element);
-      render(this.#eventListComponent, this.#eventComponent.element);
-
-      for (const event of this.#events) {
-        this.#renderEvent(event);
-      }
+      this.#renderNoEvents();
+      return;
     }
+
+    this.#renderSort();
+    this.#renderEventList();
   };
 }
