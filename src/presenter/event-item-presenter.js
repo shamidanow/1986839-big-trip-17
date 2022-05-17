@@ -4,14 +4,16 @@ import EventEditView from '../view/event-edit-view';
 
 export default class EventItemPresenter {
   #eventListContainer = null;
+  #changeData = null;
 
   #eventComponent = null;
   #eventEditComponent = null;
 
   #event = null;
 
-  constructor(eventListContainer) {
+  constructor(eventListContainer, changeData) {
     this.#eventListContainer = eventListContainer;
+    this.#changeData = changeData;
   }
 
   init = (event) => {
@@ -24,8 +26,9 @@ export default class EventItemPresenter {
     this.#eventEditComponent = new EventEditView(event);
 
     this.#eventComponent.setEditClickHandler(this.#handleEditClick);
+    this.#eventComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#eventEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
-    this.#eventEditComponent.setEditClickHandler(this.#handleFormSubmit);
+    this.#eventEditComponent.setEditClickHandler(this.#handleCloseClick);
 
     if (prevEventComponent === null || prevEventEditComponent === null) {
       render(this.#eventComponent, this.#eventListContainer);
@@ -72,7 +75,16 @@ export default class EventItemPresenter {
     this.#replaceCardToForm();
   };
 
-  #handleFormSubmit = () => {
+  #handleCloseClick = () => {
+    this.#replaceFormToCard();
+  };
+
+  #handleFavoriteClick = () => {
+    this.#changeData({...this.#event, isFavorite: !this.#event.isFavorite});
+  };
+
+  #handleFormSubmit = (event) => {
+    this.#changeData(event);
     this.#replaceFormToCard();
   };
 }

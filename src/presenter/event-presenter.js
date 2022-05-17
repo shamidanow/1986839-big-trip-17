@@ -39,7 +39,7 @@ export default class EventPresenter {
   };
 
   #renderEvent = (event) => {
-    const eventItemPresenter = new EventItemPresenter(this.#eventListComponent.element);
+    const eventItemPresenter = new EventItemPresenter(this.#eventListComponent.element, this.#handleEventChange);
     eventItemPresenter.init(event);
     this.#eventItemPresenter.set(event.id, eventItemPresenter);
   };
