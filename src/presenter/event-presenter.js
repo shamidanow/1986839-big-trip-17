@@ -1,4 +1,5 @@
 import {render, RenderPosition} from '../framework/render.js';
+import {updateItem} from '../utils/common.js';
 import EventSectionView from '../view/event-section-view';
 import EventListView from '../view/event-list-view';
 import SortView from '../view/sort-view';
@@ -26,6 +27,11 @@ export default class EventPresenter {
     this.#events = [...this.#eventsModel.events];
 
     this.#renderEventSection();
+  };
+
+  #handleEventChange = (updatedEvent) => {
+    this.#events = updateItem(this.#events, updatedEvent);
+    this.#eventItemPresenter.get(updatedEvent.id).init(updatedEvent);
   };
 
   #renderSort = () => {
