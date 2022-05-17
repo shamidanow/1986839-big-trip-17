@@ -29,6 +29,10 @@ export default class EventPresenter {
     this.#renderEventSection();
   };
 
+  #handleModeChange = () => {
+    this.#eventItemPresenter.forEach((presenter) => presenter.resetView());
+  };
+
   #handleEventChange = (updatedEvent) => {
     this.#events = updateItem(this.#events, updatedEvent);
     this.#eventItemPresenter.get(updatedEvent.id).init(updatedEvent);
@@ -39,7 +43,7 @@ export default class EventPresenter {
   };
 
   #renderEvent = (event) => {
-    const eventItemPresenter = new EventItemPresenter(this.#eventListComponent.element, this.#handleEventChange);
+    const eventItemPresenter = new EventItemPresenter(this.#eventListComponent.element, this.#handleEventChange, this.#handleModeChange);
     eventItemPresenter.init(event);
     this.#eventItemPresenter.set(event.id, eventItemPresenter);
   };

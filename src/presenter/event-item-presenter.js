@@ -2,18 +2,26 @@ import {render, replace, remove} from '../framework/render.js';
 import EventView from '../view/event-view';
 import EventEditView from '../view/event-edit-view';
 
+const Mode = {
+  DEFAULT: 'DEFAULT',
+  EDITING: 'EDITING',
+};
+
 export default class EventItemPresenter {
   #eventListContainer = null;
   #changeData = null;
+  #changeMode = null;
 
   #eventComponent = null;
   #eventEditComponent = null;
 
   #event = null;
+  #mode = Mode.DEFAULT;
 
-  constructor(eventListContainer, changeData) {
+  constructor(eventListContainer, changeData, changeMode) {
     this.#eventListContainer = eventListContainer;
     this.#changeData = changeData;
+    this.#changeMode = changeMode;
   }
 
   init = (event) => {
@@ -35,13 +43,11 @@ export default class EventItemPresenter {
       return;
     }
 
-    // Проверка на наличие в DOM необходима,
-    // чтобы не пытаться заменить то, что не было отрисовано
-    if (this.#eventListContainer.contains(prevEventComponent.element)) {
+    if (this.#mode === Mode.DEFAULT) {
       replace(this.#eventComponent, prevEventComponent);
     }
 
-    if (this.#eventListContainer.contains(prevEventEditComponent.element)) {
+    if (this.#mode === Mode.EDITING) {
       replace(this.#eventEditComponent, prevEventEditComponent);
     }
 
@@ -54,14 +60,23 @@ export default class EventItemPresenter {
     remove(this.#eventEditComponent);
   };
 
+  resetView = () => {
+    if (this.#mode !== Mode.DEFAULT) {
+      this.#replaceFormToCard();
+    }
+  };
+
   #replaceCardToForm = () => {
     replace(this.#eventEditComponent, this.#eventComponent);
     document.addEventListener('keydown', this.#escKeyDownHandler);
+    this.#changeMode();
+    this.#mode = Mode.EDITING;
   };
 
   #replaceFormToCard = () => {
     replace(this.#eventComponent, this.#eventEditComponent);
     document.removeEventListener('keydown', this.#escKeyDownHandler);
+    this.#mode = Mode.DEFAULT;
   };
 
   #escKeyDownHandler = (evt) => {
