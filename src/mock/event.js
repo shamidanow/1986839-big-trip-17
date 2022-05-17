@@ -4,6 +4,7 @@ import {EVENT_TYPES} from '../const.js';
 import {OFFERS} from './offers';
 import {generateDestination} from './destination';
 import dayjs from 'dayjs';
+import {nanoid} from 'nanoid';
 
 const generateDate = (dayBegin, dayEnd) => {
   const daysGap = getRandomInteger(dayBegin, dayEnd);
@@ -30,7 +31,7 @@ export const generateEvent = () => {
 
   return (
     {
-      id: getRandomInteger(1, 10),
+      id: nanoid(),
       basePrice: getRandomInteger(100, 1100),
       dateFrom: generateDate(0, 2),
       dateTo: generateDate(3, 5),

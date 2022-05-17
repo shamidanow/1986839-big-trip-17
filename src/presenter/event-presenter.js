@@ -15,6 +15,7 @@ export default class EventPresenter {
   #noEventComponent = new NoEventView();
 
   #events = [];
+  #eventItemPresenter = new Map();
 
   constructor(eventContainer, eventsModel) {
     this.#eventContainer = eventContainer;
@@ -34,6 +35,7 @@ export default class EventPresenter {
   #renderEvent = (event) => {
     const eventItemPresenter = new EventItemPresenter(this.#eventListComponent.element);
     eventItemPresenter.init(event);
+    this.#eventItemPresenter.set(event.id, eventItemPresenter);
   };
 
   #renderEvents = (from, to) => {
@@ -44,6 +46,11 @@ export default class EventPresenter {
 
   #renderNoEvents = () => {
     render(this.#noEventComponent, this.#eventComponent.element, RenderPosition.AFTERBEGIN);
+  };
+
+  #clearEventList = () => {
+    this.#eventItemPresenter.forEach((presenter) => presenter.destroy());
+    this.#eventItemPresenter.clear();
   };
 
   #renderEventList = () => {
