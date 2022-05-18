@@ -1,10 +1,10 @@
-import {render, replace} from '../framework/render.js';
+import {render, RenderPosition} from '../framework/render.js';
+import {updateItem} from '../utils/common.js';
 import EventSectionView from '../view/event-section-view';
 import EventListView from '../view/event-list-view';
 import SortView from '../view/sort-view';
-import EventEditView from '../view/event-edit-view';
-import EventView from '../view/event-view';
 import NoEventView from '../view/no-event-view';
+import EventItemPresenter from './event-item-presenter';
 
 export default class EventPresenter {
   #eventContainer = null;
@@ -12,8 +12,11 @@ export default class EventPresenter {
 
   #eventComponent = new EventSectionView();
   #eventListComponent = new EventListView();
+  #sortComponent = new SortView();
+  #noEventComponent = new NoEventView();
 
   #events = [];
+  #eventItemPresenter = new Map();
 
   constructor(eventContainer, eventsModel) {
     this.#eventContainer = eventContainer;
@@ -26,56 +29,54 @@ export default class EventPresenter {
     this.#renderEventSection();
   };
 
+  #handleModeChange = () => {
+    this.#eventItemPresenter.forEach((presenter) => presenter.resetView());
+  };
+
+  #handleEventChange = (updatedEvent) => {
+    this.#events = updateItem(this.#events, updatedEvent);
+    this.#eventItemPresenter.get(updatedEvent.id).init(updatedEvent);
+  };
+
+  #renderSort = () => {
+    render(this.#sortComponent, this.#eventComponent.element, RenderPosition.AFTERBEGIN);
+  };
+
   #renderEvent = (event) => {
-    const eventComponent = new EventView(event);
-    const eventEditComponent = new EventEditView(event);
+    const eventItemPresenter = new EventItemPresenter(this.#eventListComponent.element, this.#handleEventChange, this.#handleModeChange);
+    eventItemPresenter.init(event);
+    this.#eventItemPresenter.set(event.id, eventItemPresenter);
+  };
 
-    const replaceCardToForm = () => {
-      replace(eventEditComponent, eventComponent);
-    };
+  #renderEvents = (from, to) => {
+    this.#events
+      .slice(from, to)
+      .forEach((event) => this.#renderEvent(event));
+  };
 
-    const replaceFormToCard = () => {
-      replace(eventComponent, eventEditComponent);
-    };
+  #renderNoEvents = () => {
+    render(this.#noEventComponent, this.#eventComponent.element, RenderPosition.AFTERBEGIN);
+  };
 
-    const onEscKeyDown = (evt) => {
-      if (evt.key === 'Escape' || evt.key === 'Esc') {
-        evt.preventDefault();
-        replaceFormToCard();
-        document.removeEventListener('keydown', onEscKeyDown);
-      }
-    };
+  #clearEventList = () => {
+    this.#eventItemPresenter.forEach((presenter) => presenter.destroy());
+    this.#eventItemPresenter.clear();
+  };
 
-    eventComponent.setEditClickHandler(() => {
-      replaceCardToForm();
-      document.addEventListener('keydown', onEscKeyDown);
-    });
-
-    eventEditComponent.setFormSubmitHandler(() => {
-      replaceFormToCard();
-      document.removeEventListener('keydown', onEscKeyDown);
-    });
-
-    eventEditComponent.setEditClickHandler(() => {
-      replaceFormToCard();
-      document.removeEventListener('keydown', onEscKeyDown);
-    });
-
-    render(eventComponent, this.#eventListComponent.element);
+  #renderEventList = () => {
+    render(this.#eventListComponent, this.#eventComponent.element);
+    this.#renderEvents(0, this.#events.length);
   };
 
   #renderEventSection = () => {
     render(this.#eventComponent, this.#eventContainer);
 
     if (this.#events.length === 0) {
-      render(new NoEventView(), this.#eventComponent.element);
-    } else {
-      render(new SortView(), this.#eventComponent.element);
-      render(this.#eventListComponent, this.#eventComponent.element);
-
-      for (const event of this.#events) {
-        this.#renderEvent(event);
-      }
+      this.#renderNoEvents();
+      return;
     }
+
+    this.#renderSort();
+    this.#renderEventList();
   };
 }
