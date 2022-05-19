@@ -29,4 +29,18 @@ const getEventDuration = (dateFrom, dateTo) => {
 const isEventFuture = (dateFrom) => dateFrom && dayjs().isBefore(dateFrom, 'D');
 const isEventPast = (dateTo) => dateTo && dayjs().isAfter(dateTo, 'D');
 
-export {humanizeDate, hoursMinutesDate, yearMonthDate, fullDate, slashesFullDate, getEventDuration, isEventFuture, isEventPast};
+const sortEventTime = (eventA, eventB) => {
+  const date1A = dayjs(eventA.dateFrom);
+  const date2A = dayjs(eventA.dateTo);
+  const durationEventA = date2A.diff(date1A);
+
+  const date1B = dayjs(eventB.dateFrom);
+  const date2B = dayjs(eventB.dateTo);
+  const durationEventB = date2B.diff(date1B);
+
+  return durationEventB - durationEventA;
+};
+
+const sortEventPrice = (eventA, eventB) => eventB.basePrice - eventA.basePrice;
+
+export {humanizeDate, hoursMinutesDate, yearMonthDate, fullDate, slashesFullDate, getEventDuration, isEventFuture, isEventPast, sortEventTime, sortEventPrice};

@@ -1,5 +1,7 @@
 import {render, RenderPosition} from '../framework/render.js';
 import {updateItem} from '../utils/common.js';
+import {sortEventTime, sortEventPrice} from '../utils/event.js';
+import {SortType} from '../const.js';
 import EventSectionView from '../view/event-section-view';
 import EventListView from '../view/event-list-view';
 import SortView from '../view/sort-view';
@@ -17,6 +19,8 @@ export default class EventPresenter {
 
   #events = [];
   #eventItemPresenter = new Map();
+  #currentSortType = SortType.DEFAULT;
+  #sourcedEvents = [];
 
   constructor(eventContainer, eventsModel) {
     this.#eventContainer = eventContainer;
@@ -25,6 +29,7 @@ export default class EventPresenter {
 
   init = () => {
     this.#events = [...this.#eventsModel.events];
+    this.#sourcedEvents = [...this.#eventsModel.events];
 
     this.#renderEventSection();
   };
@@ -35,11 +40,38 @@ export default class EventPresenter {
 
   #handleEventChange = (updatedEvent) => {
     this.#events = updateItem(this.#events, updatedEvent);
+    this.#sourcedEvents = updateItem(this.#sourcedEvents, updatedEvent);
     this.#eventItemPresenter.get(updatedEvent.id).init(updatedEvent);
+  };
+
+  #sortEvents = (sortType) => {
+    switch (sortType) {
+      case SortType.TIME:
+        this.#events.sort(sortEventTime);
+        break;
+      case SortType.PRICE:
+        this.#events.sort(sortEventPrice);
+        break;
+      default:
+        this.#events = [...this.#sourcedEvents];
+    }
+
+    this.#currentSortType = sortType;
+  };
+
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+
+    this.#sortEvents(sortType);
+    this.#clearEventList();
+    this.#renderEventList();
   };
 
   #renderSort = () => {
     render(this.#sortComponent, this.#eventComponent.element, RenderPosition.AFTERBEGIN);
+    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   };
 
   #renderEvent = (event) => {
