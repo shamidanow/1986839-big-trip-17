@@ -12,5 +12,10 @@ const FilterType = {
   FUTURE: 'future',
   PAST: 'past'
 };
+const SortType = {
+  DEFAULT: 'default',
+  TIME: 'time',
+  PRICE: 'price',
+};
 
-export {EVENT_TYPES, DESTINATION_NAMES, DESTINATION_DESCRIPTIONS, FilterType};
+export {EVENT_TYPES, DESTINATION_NAMES, DESTINATION_DESCRIPTIONS, FilterType, SortType};
