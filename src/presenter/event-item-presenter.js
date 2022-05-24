@@ -37,6 +37,7 @@ export default class EventItemPresenter {
     this.#eventComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#eventEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#eventEditComponent.setEditClickHandler(this.#handleCloseClick);
+    this.#eventEditComponent.setCancelClickHandler(this.#handleCloseClick);
 
     if (prevEventComponent === null || prevEventEditComponent === null) {
       render(this.#eventComponent, this.#eventListContainer);
@@ -62,6 +63,7 @@ export default class EventItemPresenter {
 
   resetView = () => {
     if (this.#mode !== Mode.DEFAULT) {
+      this.#eventEditComponent.reset(this.#event);
       this.#replaceFormToCard();
     }
   };
@@ -82,6 +84,7 @@ export default class EventItemPresenter {
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
+      this.#eventEditComponent.reset(this.#event);
       this.#replaceFormToCard();
     }
   };
@@ -91,6 +94,7 @@ export default class EventItemPresenter {
   };
 
   #handleCloseClick = () => {
+    this.#eventEditComponent.reset(this.#event);
     this.#replaceFormToCard();
   };
 
