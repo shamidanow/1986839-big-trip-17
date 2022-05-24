@@ -4,7 +4,7 @@ import {EVENT_TYPES} from '../const.js';
 import {DESTINATION_NAMES} from '../const.js';
 import {OFFERS} from '../mock/offers';
 import {getRandomArrayElement, getRandomInteger} from '../utils/common';
-import {DESTINATION_DESCRIPTIONS} from "../const";
+import {DESTINATION_DESCRIPTIONS} from '../const';
 
 const BLANK_EVENT = {
   basePrice: 0,
@@ -141,7 +141,7 @@ const createEventEditTemplate = (data) => {
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          ${isEdit ? `<button class="event__reset-btn delete" type="reset">Delete</button>` : '<button class="event__reset-btn cancel" type="reset">Cancel</button>'}
+          ${isEdit ? '<button class="event__reset-btn delete" type="reset">Delete</button>' : '<button class="event__reset-btn cancel" type="reset">Cancel</button>'}
           ${buttonEditTemplate}
         </header>
         <section class="event__details">
@@ -268,7 +268,7 @@ export default class EventEditView extends AbstractStatefulView {
   #eventOffersToggleHandler = (evt) => {
     evt.preventDefault();
     const selectedOffers = this._state.offers;
-    const targetValue = parseInt(evt.target.value);
+    const targetValue = parseInt(evt.target.value, 10);
     if ( evt.target.checked ) {
       selectedOffers.push(targetValue);
     } else {
