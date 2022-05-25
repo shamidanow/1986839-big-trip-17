@@ -1,10 +1,8 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {slashesFullDate} from '../utils/event.js';
 import {EVENT_TYPES} from '../const.js';
-import {DESTINATION_NAMES} from '../const.js';
 import {OFFERS} from '../mock/offers';
-import {getRandomArrayElement, getRandomInteger} from '../utils/common';
-import {DESTINATION_DESCRIPTIONS} from '../const';
+import {DESTINATIONS} from '../mock/destinations';
 
 const BLANK_EVENT = {
   basePrice: 0,
@@ -95,7 +93,8 @@ const createEventEditTemplate = (data) => {
       : [];
   const offersTemplate = createOffersTemplate(eventTypeOffers, offers);
   const eventTypesTemplate = createEventTypesTemplate(EVENT_TYPES, type);
-  const destinationsTemplate = createDestinationsTemplate(DESTINATION_NAMES, destination.name);
+  const destinationNames = DESTINATIONS.map((item) => item['name']);
+  const destinationsTemplate = createDestinationsTemplate(destinationNames, destination.name);
   const destinationPhotosTemplate = createDestinationPhotosTemplate(destination.pictures);
 
   return (
@@ -234,34 +233,10 @@ export default class EventEditView extends AbstractStatefulView {
 
   #eventDestinationToggleHandler = (evt) => {
     evt.preventDefault();
-    //Когда выбираем пункт назначения в выпадающем списке, то там есть только название name, поэтому для description и pictures сделал случайное формирование заново
+    const targetValue = evt.target.value;
+    const destinationValue = DESTINATIONS.find((destination) => destination.name === targetValue);
     this.updateElement({
-      destination: {
-        description: getRandomArrayElement(DESTINATION_DESCRIPTIONS),
-        name: evt.target.value,
-        pictures: [
-          {
-            src: `http://picsum.photos/248/152?r=${getRandomInteger(0, 1000)}`,
-            description: getRandomArrayElement(DESTINATION_DESCRIPTIONS)
-          },
-          {
-            src: `http://picsum.photos/248/152?r=${getRandomInteger(0, 1000)}`,
-            description: getRandomArrayElement(DESTINATION_DESCRIPTIONS)
-          },
-          {
-            src: `http://picsum.photos/248/152?r=${getRandomInteger(0, 1000)}`,
-            description: getRandomArrayElement(DESTINATION_DESCRIPTIONS)
-          },
-          {
-            src: `http://picsum.photos/248/152?r=${getRandomInteger(0, 1000)}`,
-            description: getRandomArrayElement(DESTINATION_DESCRIPTIONS)
-          },
-          {
-            src: `http://picsum.photos/248/152?r=${getRandomInteger(0, 1000)}`,
-            description: getRandomArrayElement(DESTINATION_DESCRIPTIONS)
-          }
-        ]
-      }
+      destination: destinationValue
     });
   };
 

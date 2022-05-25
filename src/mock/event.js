@@ -2,7 +2,7 @@ import {getRandomInteger} from '../utils/common.js';
 import {getRandomArrayElement} from '../utils/common.js';
 import {EVENT_TYPES} from '../const.js';
 import {OFFERS} from './offers';
-import {generateDestination} from './destination';
+import {DESTINATIONS} from './destinations';
 import dayjs from 'dayjs';
 import {nanoid} from 'nanoid';
 
@@ -35,7 +35,7 @@ export const generateEvent = () => {
       basePrice: getRandomInteger(100, 1100),
       dateFrom: generateDate(0, 2),
       dateTo: generateDate(3, 5),
-      destination: getRandomArrayElement(Array.from({length: 10}, generateDestination)),
+      destination: getRandomArrayElement(DESTINATIONS),
       isFavorite: Boolean(getRandomInteger(0, 1)),
       offers: offerSelectedIds,
       type: type
