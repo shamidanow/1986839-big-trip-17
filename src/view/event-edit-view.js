@@ -1,8 +1,10 @@
-import AbstractView from '../framework/view/abstract-view.js';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {slashesFullDate} from '../utils/event.js';
 import {EVENT_TYPES} from '../const.js';
 import {DESTINATION_NAMES} from '../const.js';
 import {OFFERS} from '../mock/offers';
+import {getRandomArrayElement, getRandomInteger} from '../utils/common';
+import {DESTINATION_DESCRIPTIONS} from '../const';
 
 const BLANK_EVENT = {
   basePrice: 0,
@@ -28,6 +30,7 @@ const createOfferTemplate = (offer, eventOffers) => {
           id="event-offer-${prefix}-${offer.id}"
           type="checkbox"
           name="event-offer-${prefix}"
+          value="${offer.id}"
           ${checked}
       >
       <label class="event__offer-label" for="event-offer-${prefix}-${offer.id}">
@@ -62,9 +65,9 @@ const createEventTypesTemplate = (types, eventType) => (
   `
 );
 
-const createDestinationsTemplate = (destinations) => (
+const createDestinationsTemplate = (destinations, eventDestination) => (
   `
-    ${destinations.map((destination) => `<option value="${destination}"></option>`).join('')}
+    ${destinations.map((destination) => `<option value="${destination}" ${destination === eventDestination ? 'selected="selected"' : ''}></option>`).join('')}
   `
 );
 
@@ -74,24 +77,13 @@ const createDestinationPhotosTemplate = (destinationPhotos) => (
   `
 );
 
-const createEventEditTemplate = (event = {}) => {
-  const {
-    basePrice = 0,
-    dateFrom = null,
-    dateTo = null,
-    destination = {
-      description: '',
-      name: '',
-      pictures: []
-    },
-    offers = [],
-    type = ''
-  } = event;
+const createEventEditTemplate = (data) => {
+  const {basePrice, dateFrom, dateTo, destination, offers, type, isEdit} = data;
 
   const dateFromSlashes = slashesFullDate(dateFrom);
   const dateToSlashes = slashesFullDate(dateTo);
 
-  const buttonEditTemplate = Object.keys(event).length !== 0
+  const buttonEditTemplate = isEdit
     ? `<button class="event__rollup-btn" type="button">
         <span class="visually-hidden">Open event</span>
       </button>`
@@ -103,7 +95,7 @@ const createEventEditTemplate = (event = {}) => {
       : [];
   const offersTemplate = createOffersTemplate(eventTypeOffers, offers);
   const eventTypesTemplate = createEventTypesTemplate(EVENT_TYPES, type);
-  const destinationsTemplate = createDestinationsTemplate(DESTINATION_NAMES);
+  const destinationsTemplate = createDestinationsTemplate(DESTINATION_NAMES, destination.name);
   const destinationPhotosTemplate = createDestinationPhotosTemplate(destination.pictures);
 
   return (
@@ -149,7 +141,7 @@ const createEventEditTemplate = (event = {}) => {
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-          <button class="event__reset-btn" type="reset">${Object.keys(event).length === 0 ? 'Cancel' : 'Delete'}</button>
+          ${isEdit ? '<button class="event__reset-btn delete" type="reset">Delete</button>' : '<button class="event__reset-btn cancel" type="reset">Cancel</button>'}
           ${buttonEditTemplate}
         </header>
         <section class="event__details">
@@ -177,21 +169,32 @@ const createEventEditTemplate = (event = {}) => {
   );
 };
 
-export default class EventEditView extends AbstractView {
+export default class EventEditView extends AbstractStatefulView {
   #event = null;
 
   constructor(event = BLANK_EVENT) {
     super();
-    this.#event = event;
+    this._state = EventEditView.parseEventToState(event);
+
+    this.#setInnerHandlers();
   }
 
   get template() {
-    return createEventEditTemplate(this.#event);
+    return createEventEditTemplate(this._state);
   }
 
   setEditClickHandler = (callback) => {
-    this._callback.editClick = callback;
-    this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+    if ( this.element.querySelector('.event__rollup-btn') ) {
+      this._callback.editClick = callback;
+      this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+    }
+  };
+
+  setCancelClickHandler = (callback) => {
+    if ( this.element.querySelector('.event__reset-btn.cancel') ) {
+      this._callback.editClick = callback;
+      this.element.querySelector('.event__reset-btn.cancel').addEventListener('click', this.#editClickHandler);
+    }
   };
 
   #editClickHandler = (evt) => {
@@ -206,6 +209,109 @@ export default class EventEditView extends AbstractView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._callback.formSubmit(this.#event);
+    this._callback.formSubmit(EventEditView.parseStateToEvent(this._state));
+  };
+
+  reset = (event) => {
+    this.updateElement(
+      EventEditView.parseEventToState(event),
+    );
+  };
+
+  _restoreHandlers = () => {
+    this.#setInnerHandlers();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setEditClickHandler(this._callback.editClick);
+    this.setCancelClickHandler(this._callback.editClick);
+  };
+
+  #eventTypeToggleHandler = (evt) => {
+    evt.preventDefault();
+    this.updateElement({
+      type: evt.target.value,
+    });
+  };
+
+  #eventDestinationToggleHandler = (evt) => {
+    evt.preventDefault();
+    //Когда выбираем пункт назначения в выпадающем списке, то там есть только название name, поэтому для description и pictures сделал случайное формирование заново
+    this.updateElement({
+      destination: {
+        description: getRandomArrayElement(DESTINATION_DESCRIPTIONS),
+        name: evt.target.value,
+        pictures: [
+          {
+            src: `http://picsum.photos/248/152?r=${getRandomInteger(0, 1000)}`,
+            description: getRandomArrayElement(DESTINATION_DESCRIPTIONS)
+          },
+          {
+            src: `http://picsum.photos/248/152?r=${getRandomInteger(0, 1000)}`,
+            description: getRandomArrayElement(DESTINATION_DESCRIPTIONS)
+          },
+          {
+            src: `http://picsum.photos/248/152?r=${getRandomInteger(0, 1000)}`,
+            description: getRandomArrayElement(DESTINATION_DESCRIPTIONS)
+          },
+          {
+            src: `http://picsum.photos/248/152?r=${getRandomInteger(0, 1000)}`,
+            description: getRandomArrayElement(DESTINATION_DESCRIPTIONS)
+          },
+          {
+            src: `http://picsum.photos/248/152?r=${getRandomInteger(0, 1000)}`,
+            description: getRandomArrayElement(DESTINATION_DESCRIPTIONS)
+          }
+        ]
+      }
+    });
+  };
+
+  #eventOffersToggleHandler = (evt) => {
+    evt.preventDefault();
+    const selectedOffers = this._state.offers;
+    const targetValue = parseInt(evt.target.value, 10);
+    if ( evt.target.checked ) {
+      selectedOffers.push(targetValue);
+    } else {
+      const myIndex = selectedOffers.indexOf(targetValue);
+      if ( myIndex !== -1 ) {
+        selectedOffers.splice(myIndex, 1);
+      }
+    }
+    this._setState({
+      offers: selectedOffers,
+    });
+  };
+
+  #eventPriceToggleHandler = (evt) => {
+    evt.preventDefault();
+    this._setState({
+      basePrice: evt.target.value,
+    });
+  };
+
+  #setInnerHandlers = () => {
+    this.element.querySelector('.event__type-list')
+      .addEventListener('change', this.#eventTypeToggleHandler);
+
+    this.element.querySelector('.event__field-group.event__field-group--destination')
+      .addEventListener('change', this.#eventDestinationToggleHandler);
+
+    this.element.querySelector('.event__available-offers')
+      .addEventListener('change', this.#eventOffersToggleHandler);
+
+    this.element.querySelector('.event__field-group.event__field-group--price')
+      .addEventListener('change', this.#eventPriceToggleHandler);
+  };
+
+  static parseEventToState = (event) => ({...event,
+    isEdit: Object.keys(event).length !== 0
+  });
+
+  static parseStateToEvent = (state) => {
+    const event = {...state};
+
+    delete event.isEdit;
+
+    return event;
   };
 }
