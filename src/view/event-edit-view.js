@@ -300,6 +300,7 @@ export default class EventEditView extends AbstractStatefulView {
           enableTime: true,
           dateFormat: 'd/m/y H:i',
           defaultDate: this._state.dateFrom,
+          maxDate: this._state.dateTo,
           onChange: this.#dateFromChangeHandler
         }
       );
@@ -314,6 +315,7 @@ export default class EventEditView extends AbstractStatefulView {
           enableTime: true,
           dateFormat: 'd/m/y H:i',
           defaultDate: this._state.dateTo,
+          minDate: this._state.dateFrom,
           onChange: this.#dateToChangeHandler
         }
       );
