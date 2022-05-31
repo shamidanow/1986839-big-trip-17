@@ -7,6 +7,7 @@ import EventListView from '../view/event-list-view';
 import SortView from '../view/sort-view';
 import NoEventView from '../view/no-event-view';
 import EventItemPresenter from './event-item-presenter';
+import EventNewPresenter from './event-new-presenter.js';
 
 export default class EventPresenter {
   #eventContainer = null;
@@ -19,6 +20,7 @@ export default class EventPresenter {
   #sortComponent = null;
 
   #eventItemPresenter = new Map();
+  #eventNewPresenter = null;
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.EVERYTHING;
 
@@ -26,6 +28,8 @@ export default class EventPresenter {
     this.#eventContainer = eventContainer;
     this.#eventsModel = eventsModel;
     this.#filterModel = filterModel;
+
+    this.#eventNewPresenter = new EventNewPresenter(this.#eventListComponent.element, this.#handleViewAction);
 
     this.#eventsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -50,7 +54,14 @@ export default class EventPresenter {
     this.#renderEventSection();
   };
 
+  createEvent = (callback) => {
+    this.#currentSortType = SortType.DEFAULT;
+    this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
+    this.#eventNewPresenter.init(callback);
+  };
+
   #handleModeChange = () => {
+    this.#eventNewPresenter.destroy();
     this.#eventItemPresenter.forEach((presenter) => presenter.resetView());
   };
 
@@ -117,6 +128,7 @@ export default class EventPresenter {
   };
 
   #clearEventSection = ({resetSortType = false} = {}) => {
+    this.#eventNewPresenter.destroy();
     this.#eventItemPresenter.forEach((presenter) => presenter.destroy());
     this.#eventItemPresenter.clear();
 

@@ -18,8 +18,20 @@ const eventsModel = new EventsModel();
 const filterModel = new FilterModel();
 const eventPresenter = new EventPresenter(sitePageBodyElement, eventsModel, filterModel);
 const filterPresenter = new FilterPresenter(siteFilterElement, filterModel, eventsModel);
+const newEventButtonComponent = new NewEventButtonView();
 
-render(new NewEventButtonView(), siteMainElement);
+const handleNewEventFormClose = () => {
+  newEventButtonComponent.element.disabled = false;
+};
+
+const handleNewEventButtonClick = () => {
+  eventPresenter.createEvent(handleNewEventFormClose);
+  newEventButtonComponent.element.disabled = true;
+};
+
+render(newEventButtonComponent, siteMainElement);
+newEventButtonComponent.setClickHandler(handleNewEventButtonClick);
+
 render(new InfoMainView(), siteInfoElement);
 render(new InfoCostView(), siteInfoElement);
 

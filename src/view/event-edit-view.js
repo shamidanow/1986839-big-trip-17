@@ -95,7 +95,7 @@ const createEventEditTemplate = (data) => {
       ? OFFERS.find((offer) => offer.type === type).offers
       : [];
   const offersTemplate = createOffersTemplate(eventTypeOffers, offers);
-  const eventTypesTemplate = createEventTypesTemplate(EVENT_TYPES, type);
+  const eventTypesTemplate = createEventTypesTemplate(EVENT_TYPES, type !== '' ? type : EVENT_TYPES[0]);
   const destinationNames = DESTINATIONS.map((item) => item['name']);
   const destinationsTemplate = createDestinationsTemplate(destinationNames, destination.name);
   const destinationPhotosTemplate = createDestinationPhotosTemplate(destination.pictures);
@@ -107,7 +107,7 @@ const createEventEditTemplate = (data) => {
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-1">
               <span class="visually-hidden">Choose event type</span>
-              <img class="event__type-icon" width="17" height="17" src="${type !== '' ? `img/icons/${type}.png` : ''}" alt="Event type icon">
+              <img class="event__type-icon" width="17" height="17" src="${type !== '' ? `img/icons/${type}.png` : `img/icons/${EVENT_TYPES[0]}.png`}" alt="Event type icon">
             </label>
             <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -232,8 +232,10 @@ export default class EventEditView extends AbstractStatefulView {
   };
 
   setDeleteClickHandler = (callback) => {
-    this._callback.deleteClick = callback;
-    this.element.querySelector('.event__reset-btn.delete').addEventListener('click', this.#formDeleteClickHandler);
+    if ( this.element.querySelector('.event__reset-btn.delete') ) {
+      this._callback.deleteClick = callback;
+      this.element.querySelector('.event__reset-btn.delete').addEventListener('click', this.#formDeleteClickHandler);
+    }
   };
 
   #formDeleteClickHandler = (evt) => {
@@ -304,33 +306,29 @@ export default class EventEditView extends AbstractStatefulView {
   };
 
   #setDateFromDatepicker = () => {
-    if ( this._state.dateFrom ) {
-      this.#datepicker = flatpickr(
-        this.element.querySelector('.event__input.event__input--time.start'),
-        {
-          enableTime: true,
-          dateFormat: 'd/m/y H:i',
-          defaultDate: this._state.dateFrom,
-          maxDate: this._state.dateTo,
-          onChange: this.#dateFromChangeHandler
-        }
-      );
-    }
+    this.#datepicker = flatpickr(
+      this.element.querySelector('.event__input.event__input--time.start'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._state.dateFrom,
+        maxDate: this._state.dateTo,
+        onChange: this.#dateFromChangeHandler
+      }
+    );
   };
 
   #setDateToDatepicker = () => {
-    if ( this._state.dateTo ) {
-      this.#datepicker = flatpickr(
-        this.element.querySelector('.event__input.event__input--time.end'),
-        {
-          enableTime: true,
-          dateFormat: 'd/m/y H:i',
-          defaultDate: this._state.dateTo,
-          minDate: this._state.dateFrom,
-          onChange: this.#dateToChangeHandler
-        }
-      );
-    }
+    this.#datepicker = flatpickr(
+      this.element.querySelector('.event__input.event__input--time.end'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._state.dateTo,
+        minDate: this._state.dateFrom,
+        onChange: this.#dateToChangeHandler
+      }
+    );
   };
 
   #setInnerHandlers = () => {
@@ -348,7 +346,7 @@ export default class EventEditView extends AbstractStatefulView {
   };
 
   static parseEventToState = (event) => ({...event,
-    isEdit: Object.keys(event).length !== 0
+    isEdit: event.hasOwnProperty('id')
   });
 
   static parseStateToEvent = (state) => {
