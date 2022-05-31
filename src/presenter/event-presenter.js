@@ -1,6 +1,7 @@
 import {render, RenderPosition, remove} from '../framework/render.js';
 import {sortEventTime, sortEventPrice} from '../utils/event.js';
 import {SortType, UpdateType, UserAction} from '../const.js';
+import {filter} from '../utils/filter.js';
 import EventSectionView from '../view/event-section-view';
 import EventListView from '../view/event-list-view';
 import SortView from '../view/sort-view';
@@ -10,6 +11,7 @@ import EventItemPresenter from './event-item-presenter';
 export default class EventPresenter {
   #eventContainer = null;
   #eventsModel = null;
+  #filterModel = null;
 
   #eventComponent = new EventSectionView();
   #eventListComponent = new EventListView();
@@ -19,22 +21,28 @@ export default class EventPresenter {
   #eventItemPresenter = new Map();
   #currentSortType = SortType.DEFAULT;
 
-  constructor(eventContainer, eventsModel) {
+  constructor(eventContainer, eventsModel, filterModel) {
     this.#eventContainer = eventContainer;
     this.#eventsModel = eventsModel;
+    this.#filterModel = filterModel;
 
     this.#eventsModel.addObserver(this.#handleModelEvent);
+    this.#filterModel.addObserver(this.#handleModelEvent);
   }
 
   get events() {
+    const filterType = this.#filterModel.filter;
+    const events = this.#eventsModel.events;
+    const filteredEvents = filter[filterType](events);
+
     switch (this.#currentSortType) {
       case SortType.TIME:
-        return [...this.#eventsModel.events].sort(sortEventTime);
+        return filteredEvents.sort(sortEventTime);
       case SortType.PRICE:
-        return [...this.#eventsModel.events].sort(sortEventPrice);
+        return filteredEvents.sort(sortEventPrice);
     }
 
-    return this.#eventsModel.events;
+    return filteredEvents;
   }
 
   init = () => {
@@ -107,8 +115,6 @@ export default class EventPresenter {
   };
 
   #clearEventSection = ({resetSortType = false} = {}) => {
-    const eventCount = this.events.length;
-
     this.#eventItemPresenter.forEach((presenter) => presenter.destroy());
     this.#eventItemPresenter.clear();
 

@@ -12,7 +12,7 @@ export default class EventsModel extends Observable {
     const index = this.#events.findIndex((event) => event.id === update.id);
 
     if (index === -1) {
-      throw new Error('Can\'t update unexisting task');
+      throw new Error('Can\'t update unexisting event');
     }
 
     this.#events = [
@@ -37,7 +37,7 @@ export default class EventsModel extends Observable {
     const index = this.#events.findIndex((event) => event.id === update.id);
 
     if (index === -1) {
-      throw new Error('Can\'t delete unexisting task');
+      throw new Error('Can\'t delete unexisting event');
     }
 
     this.#events = [

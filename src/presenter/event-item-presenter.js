@@ -122,11 +122,11 @@ export default class EventItemPresenter {
     this.#replaceFormToCard();
   };
 
-  #handleDeleteClick = (task) => {
+  #handleDeleteClick = (event) => {
     this.#changeData(
       UserAction.DELETE_EVENT,
       UpdateType.MINOR,
-      task,
+      event,
     );
   };
 }
