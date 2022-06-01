@@ -1,5 +1,5 @@
 import {render, RenderPosition, remove} from '../framework/render.js';
-import {sortEventTime, sortEventPrice} from '../utils/event.js';
+import {sortEventDay, sortEventTime, sortEventPrice} from '../utils/event.js';
 import {SortType, UpdateType, UserAction, FilterType} from '../const.js';
 import {filter} from '../utils/filter.js';
 import EventSectionView from '../view/event-section-view';
@@ -41,6 +41,8 @@ export default class EventPresenter {
     const filteredEvents = filter[this.#filterType](events);
 
     switch (this.#currentSortType) {
+      case SortType.DEFAULT:
+        return filteredEvents.sort(sortEventDay);
       case SortType.TIME:
         return filteredEvents.sort(sortEventTime);
       case SortType.PRICE:

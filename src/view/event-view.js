@@ -5,6 +5,7 @@ import {yearMonthDate} from '../utils/event.js';
 import {fullDate} from '../utils/event.js';
 import {getEventDuration} from '../utils/event.js';
 import {OFFERS} from '../mock/offers';
+import he from 'he';
 
 const createOfferTemplate = (offer) => `
     <li class="event__offer">
@@ -42,7 +43,7 @@ const createEventTemplate = (event) => {
         <div class="event__type">
           <img class="event__type-icon" width="42" height="42" src="${type !== '' ? `img/icons/${type}.png` : ''}" alt="Event type icon">
         </div>
-        <h3 class="event__title">${type} ${destination ? destination.name : ''}</h3>
+        <h3 class="event__title">${type} ${destination ? he.encode(destination.name) : ''}</h3>
         <div class="event__schedule">
           <p class="event__time">
             <time class="event__start-time" datetime="${dateFromFull}">${dateFromHoursMinutes}</time>

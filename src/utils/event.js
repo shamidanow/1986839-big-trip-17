@@ -14,20 +14,29 @@ const getEventDuration = (dateFrom, dateTo) => {
   const days = Math.floor(allHours / 24);
   const hours = allHours - (days * 24);
   const minutes = allMinutes - (allHours * 60);
+  const daysWithZero = String(days).padStart(2, '0');
+  const hoursWithZero = String(hours).padStart(2, '0');
+  const minutesWithZero = String(minutes).padStart(2, '0');
 
   if (days > 0) {
-    return `${days}D ${hours}H ${minutes}M`;
+    return `${daysWithZero}D ${hoursWithZero}H ${minutesWithZero}M`;
   }
 
   if (hours > 0) {
-    return `${hours}H ${minutes}M`;
+    return `${hoursWithZero}H ${minutesWithZero}M`;
   }
 
-  return `${minutes}M`;
+  return `${minutesWithZero}M`;
 };
 
 const isEventFuture = (dateFrom) => dateFrom && dayjs().isBefore(dateFrom, 'D');
 const isEventPast = (dateTo) => dateTo && dayjs().isAfter(dateTo, 'D');
+
+const sortEventDay = (eventA, eventB) => {
+  const dateFromA = dayjs(eventA.dateFrom);
+  const dateFromB = dayjs(eventB.dateFrom);
+  return dateFromA.diff(dateFromB);
+};
 
 const sortEventTime = (eventA, eventB) => {
   const date1A = dayjs(eventA.dateFrom);
@@ -45,4 +54,4 @@ const sortEventPrice = (eventA, eventB) => eventB.basePrice - eventA.basePrice;
 
 const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
 
-export {humanizeDate, hoursMinutesDate, yearMonthDate, fullDate, slashesFullDate, getEventDuration, isEventFuture, isEventPast, sortEventTime, sortEventPrice, isDatesEqual};
+export {humanizeDate, hoursMinutesDate, yearMonthDate, fullDate, slashesFullDate, getEventDuration, isEventFuture, isEventPast, sortEventDay, sortEventTime, sortEventPrice, isDatesEqual};

@@ -95,7 +95,7 @@ const createEventEditTemplate = (data) => {
       ? OFFERS.find((offer) => offer.type === type).offers
       : [];
   const offersTemplate = createOffersTemplate(eventTypeOffers, offers);
-  const eventTypesTemplate = createEventTypesTemplate(EVENT_TYPES, type !== '' ? type : EVENT_TYPES[0]);
+  const eventTypesTemplate = createEventTypesTemplate(EVENT_TYPES, type);
   const destinationNames = DESTINATIONS.map((item) => item['name']);
   const destinationsTemplate = createDestinationsTemplate(destinationNames, destination.name);
   const destinationPhotosTemplate = createDestinationPhotosTemplate(destination.pictures);
@@ -120,7 +120,7 @@ const createEventEditTemplate = (data) => {
             <label class="event__label  event__type-output" for="event-destination-1">
               ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1" required autocomplete="off">
             <datalist id="destination-list-1">
               ${destinationsTemplate}
             </datalist>
@@ -128,10 +128,10 @@ const createEventEditTemplate = (data) => {
 
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
-            <input class="event__input  event__input--time  start" id="event-start-time-1" type="text" name="event-start-time" value="${dateFromSlashes}">
+            <input class="event__input  event__input--time  start" id="event-start-time-1" type="text" name="event-start-time" value="${dateFromSlashes}" required autocomplete="off">
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">To</label>
-            <input class="event__input  event__input--time  end" id="event-end-time-1" type="text" name="event-end-time" value="${dateToSlashes}">
+            <input class="event__input  event__input--time  end" id="event-end-time-1" type="text" name="event-end-time" value="${dateToSlashes}" required autocomplete="off">
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -139,7 +139,7 @@ const createEventEditTemplate = (data) => {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+            <input class="event__input  event__input--price" id="event-price-1" type="number" min="1" step="1" name="event-price" value="${basePrice}" autocomplete="off">
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -265,7 +265,7 @@ export default class EventEditView extends AbstractStatefulView {
     const targetValue = evt.target.value;
     const destinationValue = DESTINATIONS.find((destination) => destination.name === targetValue);
     this.updateElement({
-      destination: destinationValue
+      destination: destinationValue ? destinationValue : DESTINATIONS[0]
     });
   };
 
@@ -297,18 +297,21 @@ export default class EventEditView extends AbstractStatefulView {
     this._setState({
       dateFrom: userDate,
     });
+    this.#setDateToDatepicker();
   };
 
   #dateToChangeHandler = ([userDate]) => {
     this._setState({
       dateTo: userDate,
     });
+    this.#setDateFromDatepicker();
   };
 
   #setDateFromDatepicker = () => {
     this.#datepicker = flatpickr(
       this.element.querySelector('.event__input.event__input--time.start'),
       {
+        allowInput: true,
         enableTime: true,
         dateFormat: 'd/m/y H:i',
         defaultDate: this._state.dateFrom,
@@ -322,6 +325,7 @@ export default class EventEditView extends AbstractStatefulView {
     this.#datepicker = flatpickr(
       this.element.querySelector('.event__input.event__input--time.end'),
       {
+        allowInput: true,
         enableTime: true,
         dateFormat: 'd/m/y H:i',
         defaultDate: this._state.dateTo,
@@ -346,7 +350,7 @@ export default class EventEditView extends AbstractStatefulView {
   };
 
   static parseEventToState = (event) => ({...event,
-    isEdit: event.hasOwnProperty('id')
+    isEdit: Object.prototype.hasOwnProperty.call(event, 'id')
   });
 
   static parseStateToEvent = (state) => {

@@ -1,7 +1,7 @@
 import AbstractView from '../framework/view/abstract-view.js';
 
 const createFilterItemTemplate = (filter, currentFilterType) => {
-  const {type, name} = filter;
+  const {type, name, count} = filter;
 
   return (
     `<div class="trip-filters__filter">
@@ -12,6 +12,7 @@ const createFilterItemTemplate = (filter, currentFilterType) => {
         name="trip-filter"
         value="${name}"
         ${type === currentFilterType ? 'checked' : ''}
+        ${count === 0 ? 'disabled' : ''}
       />
       <label class="trip-filters__filter-label" for="filter-${name}">
         ${name}
