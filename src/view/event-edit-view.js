@@ -107,7 +107,7 @@ const createEventEditTemplate = (data) => {
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-1">
               <span class="visually-hidden">Choose event type</span>
-              <img class="event__type-icon" width="17" height="17" src="${type !== '' ? `img/icons/${type}.png` : ''}" alt="Event type icon">
+              <img class="event__type-icon" width="17" height="17" src="${type !== '' ? `img/icons/${type}.png` : `img/icons/${EVENT_TYPES[0]}.png`}" alt="Event type icon">
             </label>
             <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
 
@@ -120,7 +120,7 @@ const createEventEditTemplate = (data) => {
             <label class="event__label  event__type-output" for="event-destination-1">
               ${type}
             </label>
-            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1">
+            <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destination.name}" list="destination-list-1" required autocomplete="off">
             <datalist id="destination-list-1">
               ${destinationsTemplate}
             </datalist>
@@ -128,10 +128,10 @@ const createEventEditTemplate = (data) => {
 
           <div class="event__field-group  event__field-group--time">
             <label class="visually-hidden" for="event-start-time-1">From</label>
-            <input class="event__input  event__input--time  start" id="event-start-time-1" type="text" name="event-start-time" value="${dateFromSlashes}">
+            <input class="event__input  event__input--time  start" id="event-start-time-1" type="text" name="event-start-time" value="${dateFromSlashes}" required autocomplete="off">
             &mdash;
             <label class="visually-hidden" for="event-end-time-1">To</label>
-            <input class="event__input  event__input--time  end" id="event-end-time-1" type="text" name="event-end-time" value="${dateToSlashes}">
+            <input class="event__input  event__input--time  end" id="event-end-time-1" type="text" name="event-end-time" value="${dateToSlashes}" required autocomplete="off">
           </div>
 
           <div class="event__field-group  event__field-group--price">
@@ -139,7 +139,7 @@ const createEventEditTemplate = (data) => {
               <span class="visually-hidden">Price</span>
               &euro;
             </label>
-            <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+            <input class="event__input  event__input--price" id="event-price-1" type="number" min="1" step="1" name="event-price" value="${basePrice}" autocomplete="off">
           </div>
 
           <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -231,6 +231,18 @@ export default class EventEditView extends AbstractStatefulView {
     );
   };
 
+  setDeleteClickHandler = (callback) => {
+    if ( this.element.querySelector('.event__reset-btn.delete') ) {
+      this._callback.deleteClick = callback;
+      this.element.querySelector('.event__reset-btn.delete').addEventListener('click', this.#formDeleteClickHandler);
+    }
+  };
+
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteClick(EventEditView.parseStateToEvent(this._state));
+  };
+
   _restoreHandlers = () => {
     this.#setInnerHandlers();
     this.#setDateFromDatepicker();
@@ -238,6 +250,7 @@ export default class EventEditView extends AbstractStatefulView {
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setEditClickHandler(this._callback.editClick);
     this.setCancelClickHandler(this._callback.editClick);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   };
 
   #eventTypeToggleHandler = (evt) => {
@@ -252,7 +265,7 @@ export default class EventEditView extends AbstractStatefulView {
     const targetValue = evt.target.value;
     const destinationValue = DESTINATIONS.find((destination) => destination.name === targetValue);
     this.updateElement({
-      destination: destinationValue
+      destination: destinationValue ? destinationValue : DESTINATIONS[0]
     });
   };
 
@@ -284,40 +297,42 @@ export default class EventEditView extends AbstractStatefulView {
     this._setState({
       dateFrom: userDate,
     });
+    this.#setDateToDatepicker();
   };
 
   #dateToChangeHandler = ([userDate]) => {
     this._setState({
       dateTo: userDate,
     });
+    this.#setDateFromDatepicker();
   };
 
   #setDateFromDatepicker = () => {
-    if ( this._state.dateFrom ) {
-      this.#datepicker = flatpickr(
-        this.element.querySelector('.event__input.event__input--time.start'),
-        {
-          enableTime: true,
-          dateFormat: 'd/m/y H:i',
-          defaultDate: this._state.dateFrom,
-          onChange: this.#dateFromChangeHandler
-        }
-      );
-    }
+    this.#datepicker = flatpickr(
+      this.element.querySelector('.event__input.event__input--time.start'),
+      {
+        allowInput: true,
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._state.dateFrom,
+        maxDate: this._state.dateTo,
+        onChange: this.#dateFromChangeHandler
+      }
+    );
   };
 
   #setDateToDatepicker = () => {
-    if ( this._state.dateTo ) {
-      this.#datepicker = flatpickr(
-        this.element.querySelector('.event__input.event__input--time.end'),
-        {
-          enableTime: true,
-          dateFormat: 'd/m/y H:i',
-          defaultDate: this._state.dateTo,
-          onChange: this.#dateToChangeHandler
-        }
-      );
-    }
+    this.#datepicker = flatpickr(
+      this.element.querySelector('.event__input.event__input--time.end'),
+      {
+        allowInput: true,
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._state.dateTo,
+        minDate: this._state.dateFrom,
+        onChange: this.#dateToChangeHandler
+      }
+    );
   };
 
   #setInnerHandlers = () => {
@@ -335,7 +350,7 @@ export default class EventEditView extends AbstractStatefulView {
   };
 
   static parseEventToState = (event) => ({...event,
-    isEdit: Object.keys(event).length !== 0
+    isEdit: Object.prototype.hasOwnProperty.call(event, 'id')
   });
 
   static parseStateToEvent = (state) => {

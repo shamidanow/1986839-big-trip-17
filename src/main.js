@@ -1,11 +1,11 @@
 import {render} from './framework/render.js';
 import NewEventButtonView from './view/new-event-button-view';
-import FilterView from './view/filter-view.js';
 import InfoMainView from './view/info-main-view';
 import InfoCostView from './view/info-cost-view';
 import EventPresenter from './presenter/event-presenter';
+import FilterPresenter from './presenter/filter-presenter.js';
 import EventsModel from './model/events-model';
-import {generateFilter} from './mock/filter.js';
+import FilterModel from './model/filter-model.js';
 
 const siteMainElement = document.querySelector('.trip-main');
 const siteFilterElement = siteMainElement.querySelector('.trip-controls__filters');
@@ -15,13 +15,25 @@ const sitePageMainElement = document.querySelector('.page-body__page-main');
 const sitePageBodyElement = sitePageMainElement.querySelector('.page-body__container');
 
 const eventsModel = new EventsModel();
-const eventPresenter = new EventPresenter(sitePageBodyElement, eventsModel);
+const filterModel = new FilterModel();
+const eventPresenter = new EventPresenter(sitePageBodyElement, eventsModel, filterModel);
+const filterPresenter = new FilterPresenter(siteFilterElement, filterModel, eventsModel);
+const newEventButtonComponent = new NewEventButtonView();
 
-const filters = generateFilter(eventsModel.events);
+const handleNewEventFormClose = () => {
+  newEventButtonComponent.element.disabled = false;
+};
 
-render(new NewEventButtonView(), siteMainElement);
-render(new FilterView(filters), siteFilterElement);
+const handleNewEventButtonClick = () => {
+  eventPresenter.createEvent(handleNewEventFormClose);
+  newEventButtonComponent.element.disabled = true;
+};
+
+render(newEventButtonComponent, siteMainElement);
+newEventButtonComponent.setClickHandler(handleNewEventButtonClick);
+
 render(new InfoMainView(), siteInfoElement);
 render(new InfoCostView(), siteInfoElement);
 
+filterPresenter.init();
 eventPresenter.init();
