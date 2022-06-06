@@ -4,7 +4,6 @@ import {hoursMinutesDate} from '../utils/event.js';
 import {yearMonthDate} from '../utils/event.js';
 import {fullDate} from '../utils/event.js';
 import {getEventDuration} from '../utils/event.js';
-import {OFFERS} from '../mock/offers';
 import he from 'he';
 
 const createOfferTemplate = (offer) => `
@@ -17,7 +16,7 @@ const createOfferTemplate = (offer) => `
 
 const createOffersTemplate = (offers) => offers.map(createOfferTemplate).join('');
 
-const createEventTemplate = (event) => {
+const createEventTemplate = (event, offerItems) => {
   const {basePrice, dateFrom, dateTo, destination, isFavorite, offers, type} = event;
 
   const dateFromHumanize = humanizeDate(dateFrom);
@@ -32,7 +31,7 @@ const createEventTemplate = (event) => {
     ? 'event__favorite-btn event__favorite-btn--active'
     : 'event__favorite-btn';
 
-  const eventTypeOffer = OFFERS.find((offer) => offer.type === type);
+  const eventTypeOffer = offerItems.find((offer) => offer.type === type);
   const eventOffers = eventTypeOffer ? eventTypeOffer.offers.filter((v) => offers.some((v2) => v.id === v2)) : [];
   const offersTemplate = createOffersTemplate(eventOffers);
 
@@ -75,14 +74,16 @@ const createEventTemplate = (event) => {
 
 export default class EventView extends AbstractView {
   #event = null;
+  #eventsModel = null;
 
-  constructor(event) {
+  constructor(event, eventsModel) {
     super();
     this.#event = event;
+    this.#eventsModel = eventsModel;
   }
 
   get template() {
-    return createEventTemplate(this.#event);
+    return createEventTemplate(this.#event, this.#eventsModel ? this.#eventsModel.offers : []);
   }
 
   setEditClickHandler = (callback) => {

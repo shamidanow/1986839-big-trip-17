@@ -62,7 +62,7 @@ export default class EventPresenter {
   createEvent = (callback) => {
     this.#currentSortType = SortType.DEFAULT;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this.#eventNewPresenter.init(callback);
+    this.#eventNewPresenter.init(callback, this.#eventsModel);
   };
 
   #handleModeChange = () => {
@@ -124,7 +124,7 @@ export default class EventPresenter {
 
   #renderEvent = (event) => {
     const eventItemPresenter = new EventItemPresenter(this.#eventListComponent.element, this.#handleViewAction, this.#handleModeChange);
-    eventItemPresenter.init(event);
+    eventItemPresenter.init(event, this.#eventsModel);
     this.#eventItemPresenter.set(event.id, eventItemPresenter);
   };
 

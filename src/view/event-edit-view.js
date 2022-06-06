@@ -1,8 +1,6 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import {slashesFullDate} from '../utils/event.js';
 import {EVENT_TYPES} from '../const.js';
-import {OFFERS} from '../mock/offers';
-import {DESTINATIONS} from '../mock/destinations';
 import flatpickr from 'flatpickr';
 
 import 'flatpickr/dist/flatpickr.min.css';
@@ -78,7 +76,7 @@ const createDestinationPhotosTemplate = (destinationPhotos) => (
   `
 );
 
-const createEventEditTemplate = (data) => {
+const createEventEditTemplate = (data, offerItems, destinationItems) => {
   const {basePrice, dateFrom, dateTo, destination, offers, type, isEdit} = data;
 
   const dateFromSlashes = slashesFullDate(dateFrom);
@@ -91,12 +89,12 @@ const createEventEditTemplate = (data) => {
     : '';
 
   const eventTypeOffers =
-    OFFERS.find((offer) => offer.type === type)
-      ? OFFERS.find((offer) => offer.type === type).offers
+    offerItems.find((offer) => offer.type === type)
+      ? offerItems.find((offer) => offer.type === type).offers
       : [];
   const offersTemplate = createOffersTemplate(eventTypeOffers, offers);
   const eventTypesTemplate = createEventTypesTemplate(EVENT_TYPES, type);
-  const destinationNames = DESTINATIONS.map((item) => item['name']);
+  const destinationNames = destinationItems.map((item) => item['name']);
   const destinationsTemplate = createDestinationsTemplate(destinationNames, destination.name);
   const destinationPhotosTemplate = createDestinationPhotosTemplate(destination.pictures);
 
@@ -173,10 +171,13 @@ const createEventEditTemplate = (data) => {
 
 export default class EventEditView extends AbstractStatefulView {
   #datepicker = null;
+  #eventsModel = null;
 
-  constructor(event = BLANK_EVENT) {
+  //поставил аргумент eventsModel на первое место, т.к. при вызове из EventNewPresenter отсутствует аргумент event
+  constructor(eventsModel = null, event = BLANK_EVENT) {
     super();
     this._state = EventEditView.parseEventToState(event);
+    this.#eventsModel = eventsModel;
 
     this.#setInnerHandlers();
     this.#setDateFromDatepicker();
@@ -184,7 +185,7 @@ export default class EventEditView extends AbstractStatefulView {
   }
 
   get template() {
-    return createEventEditTemplate(this._state);
+    return createEventEditTemplate(this._state, this.#eventsModel ? this.#eventsModel.offers : [], this.#eventsModel ? this.#eventsModel.destinations : []);
   }
 
   setEditClickHandler = (callback) => {
@@ -263,9 +264,10 @@ export default class EventEditView extends AbstractStatefulView {
   #eventDestinationToggleHandler = (evt) => {
     evt.preventDefault();
     const targetValue = evt.target.value;
-    const destinationValue = DESTINATIONS.find((destination) => destination.name === targetValue);
+    const destinationItems = this.#eventsModel ? this.#eventsModel.destinations : [];
+    const destinationValue = destinationItems.find((destination) => destination.name === targetValue);
     this.updateElement({
-      destination: destinationValue ? destinationValue : DESTINATIONS[0]
+      destination: destinationValue ? destinationValue : destinationItems[0]
     });
   };
 

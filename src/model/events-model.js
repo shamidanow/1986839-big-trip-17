@@ -4,6 +4,8 @@ import {UpdateType} from '../const.js';
 export default class EventsModel extends Observable {
   #eventsApiService = null;
   #events = [];
+  #offers = [];
+  #destinations = [];
 
   constructor(eventsApiService) {
     super();
@@ -14,12 +16,24 @@ export default class EventsModel extends Observable {
     return this.#events;
   }
 
+  get offers() {
+    return this.#offers;
+  }
+
+  get destinations() {
+    return this.#destinations;
+  }
+
   init = async () => {
     try {
       const events = await this.#eventsApiService.events;
       this.#events = events.map(this.#adaptToClient);
+      this.#offers = await this.#eventsApiService.offers;
+      this.#destinations = await this.#eventsApiService.destinations;
     } catch(err) {
       this.#events = [];
+      this.#offers = [];
+      this.#destinations = [];
     }
 
     this._notify(UpdateType.INIT);

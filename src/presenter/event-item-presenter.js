@@ -26,14 +26,13 @@ export default class EventItemPresenter {
     this.#changeMode = changeMode;
   }
 
-  init = (event) => {
+  init = (event, eventsModel) => {
     this.#event = event;
 
     const prevEventComponent = this.#eventComponent;
     const prevEventEditComponent = this.#eventEditComponent;
-
-    this.#eventComponent = new EventView(event);
-    this.#eventEditComponent = new EventEditView(event);
+    this.#eventComponent = new EventView(event, eventsModel);
+    this.#eventEditComponent = new EventEditView(eventsModel, event);
 
     this.#eventComponent.setEditClickHandler(this.#handleEditClick);
     this.#eventComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
@@ -46,7 +45,6 @@ export default class EventItemPresenter {
       render(this.#eventComponent, this.#eventListContainer);
       return;
     }
-
     if (this.#mode === Mode.DEFAULT) {
       replace(this.#eventComponent, prevEventComponent);
     }
