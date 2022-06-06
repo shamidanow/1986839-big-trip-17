@@ -45,6 +45,7 @@ export default class EventItemPresenter {
       render(this.#eventComponent, this.#eventListContainer);
       return;
     }
+
     if (this.#mode === Mode.DEFAULT) {
       replace(this.#eventComponent, prevEventComponent);
     }

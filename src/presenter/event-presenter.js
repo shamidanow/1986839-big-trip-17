@@ -87,7 +87,7 @@ export default class EventPresenter {
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        this.#eventItemPresenter.get(data.id).init(data);
+        this.#eventItemPresenter.get(data.id).init(data, this.#eventsModel);
         break;
       case UpdateType.MINOR:
         this.#clearEventSection();
