@@ -6,6 +6,10 @@ import EventPresenter from './presenter/event-presenter';
 import FilterPresenter from './presenter/filter-presenter.js';
 import EventsModel from './model/events-model';
 import FilterModel from './model/filter-model.js';
+import EventsApiService from './events-api-service.js';
+
+const AUTHORIZATION = 'Basic ekIyu26rcDDauPXj';
+const END_POINT = 'https://17.ecmascript.pages.academy/big-trip';
 
 const siteMainElement = document.querySelector('.trip-main');
 const siteFilterElement = siteMainElement.querySelector('.trip-controls__filters');
@@ -14,7 +18,7 @@ const siteInfoElement = siteMainElement.querySelector('.trip-main__trip-info');
 const sitePageMainElement = document.querySelector('.page-body__page-main');
 const sitePageBodyElement = sitePageMainElement.querySelector('.page-body__container');
 
-const eventsModel = new EventsModel();
+const eventsModel = new EventsModel(new EventsApiService(END_POINT, AUTHORIZATION));
 const filterModel = new FilterModel();
 const eventPresenter = new EventPresenter(sitePageBodyElement, eventsModel, filterModel);
 const filterPresenter = new FilterPresenter(siteFilterElement, filterModel, eventsModel);
@@ -29,11 +33,13 @@ const handleNewEventButtonClick = () => {
   newEventButtonComponent.element.disabled = true;
 };
 
-render(newEventButtonComponent, siteMainElement);
-newEventButtonComponent.setClickHandler(handleNewEventButtonClick);
-
 render(new InfoMainView(), siteInfoElement);
 render(new InfoCostView(), siteInfoElement);
 
 filterPresenter.init();
 eventPresenter.init();
+eventsModel.init()
+  .finally(() => {
+    render(newEventButtonComponent, siteMainElement);
+    newEventButtonComponent.setClickHandler(handleNewEventButtonClick);
+  });

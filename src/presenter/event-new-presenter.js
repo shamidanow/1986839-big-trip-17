@@ -14,14 +14,14 @@ export default class EventNewPresenter {
     this.#changeData = changeData;
   }
 
-  init = (callback) => {
+  init = (callback, eventsModel) => {
     this.#destroyCallback = callback;
 
     if (this.#eventEditComponent !== null) {
       return;
     }
 
-    this.#eventEditComponent = new EventEditView();
+    this.#eventEditComponent = new EventEditView(eventsModel);
     this.#eventEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#eventEditComponent.setEditClickHandler(this.#handleDeleteClick);
     this.#eventEditComponent.setCancelClickHandler(this.#handleDeleteClick);

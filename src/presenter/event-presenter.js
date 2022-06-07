@@ -8,6 +8,7 @@ import SortView from '../view/sort-view';
 import NoEventView from '../view/no-event-view';
 import EventItemPresenter from './event-item-presenter';
 import EventNewPresenter from './event-new-presenter.js';
+import LoadingView from '../view/loading-view.js';
 
 export default class EventPresenter {
   #eventContainer = null;
@@ -16,6 +17,7 @@ export default class EventPresenter {
 
   #eventComponent = new EventSectionView();
   #eventListComponent = new EventListView();
+  #loadingComponent = new LoadingView();
   #noEventComponent = null;
   #sortComponent = null;
 
@@ -23,6 +25,7 @@ export default class EventPresenter {
   #eventNewPresenter = null;
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.EVERYTHING;
+  #isLoading = true;
 
   constructor(eventContainer, eventsModel, filterModel) {
     this.#eventContainer = eventContainer;
@@ -59,7 +62,7 @@ export default class EventPresenter {
   createEvent = (callback) => {
     this.#currentSortType = SortType.DEFAULT;
     this.#filterModel.setFilter(UpdateType.MAJOR, FilterType.EVERYTHING);
-    this.#eventNewPresenter.init(callback);
+    this.#eventNewPresenter.init(callback, this.#eventsModel);
   };
 
   #handleModeChange = () => {
@@ -84,7 +87,7 @@ export default class EventPresenter {
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {
       case UpdateType.PATCH:
-        this.#eventItemPresenter.get(data.id).init(data);
+        this.#eventItemPresenter.get(data.id).init(data, this.#eventsModel);
         break;
       case UpdateType.MINOR:
         this.#clearEventSection();
@@ -92,6 +95,11 @@ export default class EventPresenter {
         break;
       case UpdateType.MAJOR:
         this.#clearEventSection({resetSortType: true});
+        this.#renderEventSection();
+        break;
+      case UpdateType.INIT:
+        this.#isLoading = false;
+        remove(this.#loadingComponent);
         this.#renderEventSection();
         break;
     }
@@ -116,12 +124,16 @@ export default class EventPresenter {
 
   #renderEvent = (event) => {
     const eventItemPresenter = new EventItemPresenter(this.#eventListComponent.element, this.#handleViewAction, this.#handleModeChange);
-    eventItemPresenter.init(event);
+    eventItemPresenter.init(event, this.#eventsModel);
     this.#eventItemPresenter.set(event.id, eventItemPresenter);
   };
 
   #renderEvents = (events) => {
     events.forEach((event) => this.#renderEvent(event));
+  };
+
+  #renderLoading = () => {
+    render(this.#loadingComponent, this.#eventComponent.element, RenderPosition.AFTERBEGIN);
   };
 
   #renderNoEvents = () => {
@@ -135,6 +147,7 @@ export default class EventPresenter {
     this.#eventItemPresenter.clear();
 
     remove(this.#sortComponent);
+    remove(this.#loadingComponent);
 
     if (this.#noEventComponent) {
       remove(this.#noEventComponent);
@@ -146,10 +159,15 @@ export default class EventPresenter {
   };
 
   #renderEventSection = () => {
+    render(this.#eventComponent, this.#eventContainer);
+
+    if (this.#isLoading) {
+      this.#renderLoading();
+      return;
+    }
+
     const events = this.events;
     const eventCount = events.length;
-
-    render(this.#eventComponent, this.#eventContainer);
 
     if (eventCount === 0) {
       this.#renderNoEvents();
