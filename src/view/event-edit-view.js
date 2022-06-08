@@ -173,7 +173,6 @@ export default class EventEditView extends AbstractStatefulView {
   #datepicker = null;
   #eventsModel = null;
 
-  //поставил аргумент eventsModel на первое место, т.к. при вызове из EventNewPresenter отсутствует аргумент event
   constructor(eventsModel = null, event = BLANK_EVENT) {
     super();
     this._state = EventEditView.parseEventToState(event);
