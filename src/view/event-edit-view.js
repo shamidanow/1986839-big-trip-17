@@ -101,6 +101,8 @@ const createEventEditTemplate = (data, offerItems, destinationItems) => {
       </button>`
     : '';
 
+  const deleteTitle = isDeleting ? 'Deleting...' : 'Delete';
+
   const eventTypeOffers =
     offerItems.find((offer) => offer.type === type)
       ? offerItems.find((offer) => offer.type === type).offers
@@ -202,10 +204,7 @@ const createEventEditTemplate = (data, offerItems, destinationItems) => {
               class="event__reset-btn ${isEdit ? 'delete' : 'cancel'}"
               type="reset"
           >
-              ${isEdit
-                  ? isDeleting ? 'Deleting...' : 'Delete'
-                  : 'Cancel'
-              }
+              ${isEdit ? deleteTitle : 'Cancel'}
           </button>
           ${buttonEditTemplate}
         </header>
