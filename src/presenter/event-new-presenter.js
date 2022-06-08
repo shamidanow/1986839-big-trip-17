@@ -51,6 +51,18 @@ export default class EventNewPresenter {
     });
   };
 
+  setAborting = () => {
+    const resetFormState = () => {
+      this.#eventEditComponent.updateElement({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#eventEditComponent.shake(resetFormState);
+  };
+
   #handleFormSubmit = (event) => {
     this.#changeData(
       UserAction.ADD_EVENT,
