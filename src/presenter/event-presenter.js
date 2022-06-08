@@ -73,12 +73,15 @@ export default class EventPresenter {
   #handleViewAction = (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
+        this.#eventItemPresenter.get(update.id).setSaving();
         this.#eventsModel.updateEvent(updateType, update);
         break;
       case UserAction.ADD_EVENT:
+        this.#eventItemPresenter.setSaving();
         this.#eventsModel.addEvent(updateType, update);
         break;
       case UserAction.DELETE_EVENT:
+        this.#eventItemPresenter.get(update.id).setDeleting();
         this.#eventsModel.deleteEvent(updateType, update);
         break;
     }
