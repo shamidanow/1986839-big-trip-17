@@ -2,6 +2,7 @@ import {render, RenderPosition, remove} from '../framework/render.js';
 import {sortEventDay, sortEventTime, sortEventPrice} from '../utils/event.js';
 import {SortType, UpdateType, UserAction, FilterType} from '../const.js';
 import {filter} from '../utils/filter.js';
+import UiBlocker from '../framework/ui-blocker/ui-blocker.js';
 import EventSectionView from '../view/event-section-view';
 import EventListView from '../view/event-list-view';
 import SortView from '../view/sort-view';
@@ -9,6 +10,11 @@ import NoEventView from '../view/no-event-view';
 import EventItemPresenter from './event-item-presenter';
 import EventNewPresenter from './event-new-presenter.js';
 import LoadingView from '../view/loading-view.js';
+
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
 
 export default class EventPresenter {
   #eventContainer = null;
@@ -26,6 +32,7 @@ export default class EventPresenter {
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.EVERYTHING;
   #isLoading = true;
+  #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 
   constructor(eventContainer, eventsModel, filterModel) {
     this.#eventContainer = eventContainer;
@@ -71,6 +78,8 @@ export default class EventPresenter {
   };
 
   #handleViewAction = async (actionType, updateType, update) => {
+    this.#uiBlocker.block();
+
     switch (actionType) {
       case UserAction.UPDATE_EVENT:
         this.#eventItemPresenter.get(update.id).setSaving();
@@ -97,6 +106,8 @@ export default class EventPresenter {
         }
         break;
     }
+
+    this.#uiBlocker.unblock();
   };
 
   #handleModelEvent = (updateType, data) => {
