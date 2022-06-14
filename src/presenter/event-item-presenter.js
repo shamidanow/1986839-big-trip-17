@@ -150,7 +150,8 @@ export default class EventItemPresenter {
       this.#event.basePrice !== update.basePrice ||
       !isDatesEqual(this.#event.dateTo, update.dateTo) ||
       !isDatesEqual(this.#event.dateFrom, update.dateFrom) ||
-      this.#event.type !== update.type;
+      this.#event.type !== update.type ||
+      this.#event.offers.length !== update.offers.length;
 
     this.#changeData(
       UserAction.UPDATE_EVENT,

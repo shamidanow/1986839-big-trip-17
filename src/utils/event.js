@@ -6,6 +6,23 @@ const yearMonthDate = (date) => date !== null ? dayjs(date).format('YYYY-MM-DD')
 const fullDate = (date) => date !== null ? dayjs(date).format('YYYY-MM-DDTHH:mm') : '';
 const slashesFullDate = (date) => date !== null ? dayjs(date).format('DD/MM/YY HH:mm') : '';
 
+const getEventDates = (dateFrom, dateTo) => {
+  let dateFromFormat = '';
+  let dateToFormat = '';
+  if ( dateFrom !== null && dateTo !== null ) {
+    const dateFromMonth = dayjs(dateFrom).format('M');
+    const dateToMonth = dayjs(dateTo).format('M');
+    if ( dateFromMonth !== dateToMonth ) {
+      dateFromFormat = dayjs(dateFrom).format('D MMM');
+      dateToFormat = dayjs(dateTo).format('D MMM');
+    } else {
+      dateFromFormat = dayjs(dateFrom).format('D MMM');
+      dateToFormat = dayjs(dateTo).format('D');
+    }
+  }
+  return `${dateFromFormat}&nbsp;&mdash;&nbsp;${dateToFormat}`;
+};
+
 const getEventDuration = (dateFrom, dateTo) => {
   const date1 = dayjs(dateFrom);
   const date2 = dayjs(dateTo);
@@ -28,6 +45,10 @@ const getEventDuration = (dateFrom, dateTo) => {
 
   return `${minutesWithZero}M`;
 };
+
+const getEventOffersByType = (offers, type) => offers.find((offer) => offer.type === type)
+  ? offers.find((offer) => offer.type === type).offers
+  : [];
 
 const isEventFuture = (dateFrom) => dateFrom && dayjs().isBefore(dateFrom, 'D');
 const isEventPast = (dateTo) => dateTo && dayjs().isAfter(dateTo, 'D');
@@ -54,4 +75,4 @@ const sortEventPrice = (eventA, eventB) => eventB.basePrice - eventA.basePrice;
 
 const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'minutes');
 
-export {humanizeDate, hoursMinutesDate, yearMonthDate, fullDate, slashesFullDate, getEventDuration, isEventFuture, isEventPast, sortEventDay, sortEventTime, sortEventPrice, isDatesEqual};
+export {humanizeDate, hoursMinutesDate, yearMonthDate, fullDate, slashesFullDate, getEventDates, getEventDuration, getEventOffersByType, isEventFuture, isEventPast, sortEventDay, sortEventTime, sortEventPrice, isDatesEqual};

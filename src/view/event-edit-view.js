@@ -1,5 +1,5 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import {slashesFullDate} from '../utils/event.js';
+import {slashesFullDate, getEventOffersByType} from '../utils/event.js';
 import {EVENT_TYPES} from '../const.js';
 import flatpickr from 'flatpickr';
 import he from 'he';
@@ -123,10 +123,7 @@ const createEventEditTemplate = (data, offerItems, destinationItems) => {
   const deleteTitle = isDeleting ? 'Deleting...' : 'Delete';
 
   const defaultNewType = type !== '' ? type : EVENT_TYPES[0];
-  const eventTypeOffers =
-    offerItems.find((offer) => offer.type === defaultNewType)
-      ? offerItems.find((offer) => offer.type === defaultNewType).offers
-      : [];
+  const eventTypeOffers = getEventOffersByType(offerItems, defaultNewType);
   const offersTemplate = createOffersTemplate(eventTypeOffers, offers, isDisabled, eventTypeOffers.length === 0);
   const eventTypesTemplate = createEventTypesTemplate(EVENT_TYPES, defaultNewType, isDisabled);
   const destinationNames = destinationItems.map((item) => item['name']);
@@ -423,7 +420,8 @@ export default class EventEditView extends AbstractStatefulView {
     isEdit: Object.prototype.hasOwnProperty.call(event, 'id'),
     isDisabled: false,
     isSaving: false,
-    isDeleting: false
+    isDeleting: false,
+    type: event.type !== '' ? event.type : EVENT_TYPES[0]
   });
 
   static parseStateToEvent = (state) => {

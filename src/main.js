@@ -1,7 +1,5 @@
 import {render} from './framework/render.js';
 import NewEventButtonView from './view/new-event-button-view';
-import InfoMainView from './view/info-main-view';
-import InfoCostView from './view/info-cost-view';
 import EventPresenter from './presenter/event-presenter';
 import FilterPresenter from './presenter/filter-presenter.js';
 import EventsModel from './model/events-model';
@@ -20,7 +18,8 @@ const sitePageBodyElement = sitePageMainElement.querySelector('.page-body__conta
 
 const eventsModel = new EventsModel(new EventsApiService(END_POINT, AUTHORIZATION));
 const filterModel = new FilterModel();
-const eventPresenter = new EventPresenter(sitePageBodyElement, eventsModel, filterModel);
+const eventPresenter = new EventPresenter(sitePageBodyElement, eventsModel, filterModel, siteInfoElement);
+
 const filterPresenter = new FilterPresenter(siteFilterElement, filterModel, eventsModel);
 const newEventButtonComponent = new NewEventButtonView();
 
@@ -32,9 +31,6 @@ const handleNewEventButtonClick = () => {
   eventPresenter.createEvent(handleNewEventFormClose);
   newEventButtonComponent.element.disabled = true;
 };
-
-render(new InfoMainView(), siteInfoElement);
-render(new InfoCostView(), siteInfoElement);
 
 filterPresenter.init();
 eventPresenter.init();
