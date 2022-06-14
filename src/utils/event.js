@@ -52,6 +52,6 @@ const sortEventTime = (eventA, eventB) => {
 
 const sortEventPrice = (eventA, eventB) => eventB.basePrice - eventA.basePrice;
 
-const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'D');
+const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'minutes');
 
 export {humanizeDate, hoursMinutesDate, yearMonthDate, fullDate, slashesFullDate, getEventDuration, isEventFuture, isEventPast, sortEventDay, sortEventTime, sortEventPrice, isDatesEqual};

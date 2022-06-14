@@ -146,8 +146,11 @@ export default class EventItemPresenter {
 
   #handleFormSubmit = (update) => {
     const isMinorUpdate =
+      this.#event.destination.name !== update.destination.name ||
+      this.#event.basePrice !== update.basePrice ||
       !isDatesEqual(this.#event.dateTo, update.dateTo) ||
-      !isDatesEqual(this.#event.dateFrom, update.dateFrom);
+      !isDatesEqual(this.#event.dateFrom, update.dateFrom) ||
+      this.#event.type !== update.type;
 
     this.#changeData(
       UserAction.UPDATE_EVENT,

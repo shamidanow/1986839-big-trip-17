@@ -43,7 +43,17 @@ const createOfferTemplate = (offer, eventOffers, isDisabled) => {
   `;
 };
 
-const createOffersTemplate = (eventTypeOffers, eventOffers, isDisabled) => eventTypeOffers.map((offer) => createOfferTemplate(offer, eventOffers, isDisabled)).join('');
+const createOffersTemplate = (eventTypeOffers, eventOffers, isDisabled, isDisplayNone) => (
+  `
+    <section class="event__section  event__section--offers" ${isDisplayNone ? 'style="display: none;"' : ''}>
+      <h3 class="event__section-title  event__section-title--offers">Offers</h3>
+
+      <div class="event__available-offers">
+        ${eventTypeOffers.map((offer) => createOfferTemplate(offer, eventOffers, isDisabled)).join('')}
+      </div>
+    </section>
+  `
+);
 
 const createEventTypeItemTemplate = (type, isChecked, isDisabled) => {
   const capitalizedValue = type[0].toUpperCase() + type.substring(1);
@@ -72,9 +82,18 @@ const createDestinationsTemplate = (destinations, eventDestination, isDisabled) 
   `
 );
 
-const createDestinationPhotosTemplate = (destinationPhotos) => (
+const createDestinationPhotosTemplate = (destination) => (
   `
-    ${destinationPhotos.map((photo) => `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`).join('')}
+    <section class="event__section  event__section--destination" ${destination.pictures.length === 0 ? 'style="display: none;"' : ''}>
+      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
+      <p class="event__destination-description">${he.encode(destination.description)}</p>
+
+      <div class="event__photos-container">
+        <div class="event__photos-tape">
+          ${destination.pictures.map((photo) => `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`).join('')}
+        </div>
+      </div>
+    </section>
   `
 );
 
@@ -103,15 +122,16 @@ const createEventEditTemplate = (data, offerItems, destinationItems) => {
 
   const deleteTitle = isDeleting ? 'Deleting...' : 'Delete';
 
+  const defaultNewType = type !== '' ? type : EVENT_TYPES[0];
   const eventTypeOffers =
-    offerItems.find((offer) => offer.type === type)
-      ? offerItems.find((offer) => offer.type === type).offers
+    offerItems.find((offer) => offer.type === defaultNewType)
+      ? offerItems.find((offer) => offer.type === defaultNewType).offers
       : [];
-  const offersTemplate = createOffersTemplate(eventTypeOffers, offers, isDisabled);
-  const eventTypesTemplate = createEventTypesTemplate(EVENT_TYPES, type, isDisabled);
+  const offersTemplate = createOffersTemplate(eventTypeOffers, offers, isDisabled, eventTypeOffers.length === 0);
+  const eventTypesTemplate = createEventTypesTemplate(EVENT_TYPES, defaultNewType, isDisabled);
   const destinationNames = destinationItems.map((item) => item['name']);
   const destinationsTemplate = createDestinationsTemplate(destinationNames, destination.name, isDisabled);
-  const destinationPhotosTemplate = createDestinationPhotosTemplate(destination.pictures);
+  const destinationPhotosTemplate = createDestinationPhotosTemplate(destination);
 
   return (
     `<li class="trip-events__item">
@@ -120,7 +140,7 @@ const createEventEditTemplate = (data, offerItems, destinationItems) => {
           <div class="event__type-wrapper">
             <label class="event__type  event__type-btn" for="event-type-toggle-1">
               <span class="visually-hidden">Choose event type</span>
-              <img class="event__type-icon" width="17" height="17" src="${type !== '' ? `img/icons/${type}.png` : `img/icons/${EVENT_TYPES[0]}.png`}" alt="Event type icon">
+              <img class="event__type-icon" width="17" height="17" src="img/icons/${defaultNewType}.png" alt="Event type icon">
             </label>
             <input
                 class="event__type-toggle  visually-hidden"
@@ -209,24 +229,8 @@ const createEventEditTemplate = (data, offerItems, destinationItems) => {
           ${buttonEditTemplate}
         </header>
         <section class="event__details">
-          <section class="event__section  event__section--offers">
-            <h3 class="event__section-title  event__section-title--offers">Offers</h3>
-
-            <div class="event__available-offers">
-              ${offersTemplate}
-            </div>
-          </section>
-
-          <section class="event__section  event__section--destination">
-            <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-            <p class="event__destination-description">${he.encode(destination.description)}</p>
-
-            <div class="event__photos-container">
-            <div class="event__photos-tape">
-              ${destinationPhotosTemplate}
-            </div>
-          </div>
-          </section>
+          ${offersTemplate}
+          ${destinationPhotosTemplate}
         </section>
       </form>
     </li>`
@@ -321,6 +325,7 @@ export default class EventEditView extends AbstractStatefulView {
     evt.preventDefault();
     this.updateElement({
       type: evt.target.value,
+      offers: []
     });
   };
 
@@ -336,7 +341,7 @@ export default class EventEditView extends AbstractStatefulView {
 
   #eventOffersToggleHandler = (evt) => {
     evt.preventDefault();
-    const selectedOffers = this._state.offers;
+    const selectedOffers = [...this._state.offers];
     const targetValue = parseInt(evt.target.value, 10);
     if ( evt.target.checked ) {
       selectedOffers.push(targetValue);
@@ -354,7 +359,7 @@ export default class EventEditView extends AbstractStatefulView {
   #eventPriceToggleHandler = (evt) => {
     evt.preventDefault();
     this._setState({
-      basePrice: evt.target.value,
+      basePrice: parseInt(evt.target.value, 10),
     });
   };
 
