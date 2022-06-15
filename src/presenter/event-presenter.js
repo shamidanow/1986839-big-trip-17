@@ -10,6 +10,7 @@ import NoEventView from '../view/no-event-view';
 import EventItemPresenter from './event-item-presenter';
 import EventNewPresenter from './event-new-presenter.js';
 import LoadingView from '../view/loading-view.js';
+import EventInfoPresenter from './event-info-presenter';
 
 const TimeLimit = {
   LOWER_LIMIT: 350,
@@ -29,17 +30,19 @@ export default class EventPresenter {
 
   #eventItemPresenter = new Map();
   #eventNewPresenter = null;
+  #eventInfoPresenter = null;
   #currentSortType = SortType.DEFAULT;
   #filterType = FilterType.EVERYTHING;
   #isLoading = true;
   #uiBlocker = new UiBlocker(TimeLimit.LOWER_LIMIT, TimeLimit.UPPER_LIMIT);
 
-  constructor(eventContainer, eventsModel, filterModel) {
+  constructor(eventContainer, eventsModel, filterModel, siteInfoElement) {
     this.#eventContainer = eventContainer;
     this.#eventsModel = eventsModel;
     this.#filterModel = filterModel;
 
     this.#eventNewPresenter = new EventNewPresenter(this.#eventListComponent.element, this.#handleViewAction);
+    this.#eventInfoPresenter = new EventInfoPresenter(siteInfoElement, this.#eventsModel);
 
     this.#eventsModel.addObserver(this.#handleModelEvent);
     this.#filterModel.addObserver(this.#handleModelEvent);
@@ -168,6 +171,7 @@ export default class EventPresenter {
   };
 
   #clearEventSection = ({resetSortType = false} = {}) => {
+    this.#eventInfoPresenter.destroy();
     this.#eventNewPresenter.destroy();
     this.#eventItemPresenter.forEach((presenter) => presenter.destroy());
     this.#eventItemPresenter.clear();
@@ -198,6 +202,8 @@ export default class EventPresenter {
     if (eventCount === 0) {
       this.#renderNoEvents();
       return;
+    } else {
+      this.#eventInfoPresenter.init();
     }
 
     this.#renderSort();
