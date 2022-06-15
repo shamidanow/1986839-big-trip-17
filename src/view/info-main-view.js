@@ -1,20 +1,23 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import {getEventDates} from '../utils/event';
+import {getEventDates, sortEventDay} from '../utils/event';
 
 const createInfoMainTemplate = (events) => {
-  const firstEvent = events[0];
-  const lastEvent = events[events.length - 1];
+  const sortedEvents = [...events];
+  sortedEvents.sort(sortEventDay);
+
+  const firstEvent = sortedEvents[0];
+  const lastEvent = sortedEvents[sortedEvents.length - 1];
 
   const firstDestination = firstEvent ? firstEvent.destination.name : '';
   const lastDestination = lastEvent ? lastEvent.destination.name : '';
   let infoTitle = '';
-  if ( events.length > 3 ) {
+  if ( sortedEvents.length > 3 ) {
     infoTitle = `${firstDestination} &mdash; ... &mdash; ${lastDestination}`;
   }
-  if ( events.length > 1 && events.length < 3 ) {
-    infoTitle = events.map(({ destination }) => `${destination.name}`).join(' &mdash; ');
+  if ( sortedEvents.length > 1 && sortedEvents.length < 3 ) {
+    infoTitle = sortedEvents.map(({ destination }) => `${destination.name}`).join(' &mdash; ');
   }
-  if ( events.length === 1 ) {
+  if ( sortedEvents.length === 1 ) {
     infoTitle = `${firstDestination}`;
   }
 
