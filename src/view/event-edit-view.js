@@ -1,8 +1,7 @@
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import {slashesFullDate, getEventOffersByType} from '../utils/event.js';
+import {slashesFullDate, getEventOffersByType, encodeValue} from '../utils/event.js';
 import {EVENT_TYPES} from '../const.js';
 import flatpickr from 'flatpickr';
-import he from 'he';
 
 import 'flatpickr/dist/flatpickr.min.css';
 
@@ -86,7 +85,7 @@ const createDestinationPhotosTemplate = (destination) => (
   `
     <section class="event__section  event__section--destination" ${destination.pictures.length === 0 ? 'style="display: none;"' : ''}>
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-      <p class="event__destination-description">${he.encode(destination.description)}</p>
+      <p class="event__destination-description">${encodeValue(destination.description)}</p>
 
       <div class="event__photos-container">
         <div class="event__photos-tape">

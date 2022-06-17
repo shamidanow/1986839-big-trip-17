@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import he from 'he';
 
 const humanizeDate = (date) => date !== null ? dayjs(date).format('MMM D') : '';
 const hoursMinutesDate = (date) => date !== null ? dayjs(date).format('hh:mm') : '';
@@ -75,4 +76,8 @@ const sortEventPrice = (eventA, eventB) => eventB.basePrice - eventA.basePrice;
 
 const isDatesEqual = (dateA, dateB) => (dateA === null && dateB === null) || dayjs(dateA).isSame(dateB, 'minutes');
 
-export {humanizeDate, hoursMinutesDate, yearMonthDate, fullDate, slashesFullDate, getEventDates, getEventDuration, getEventOffersByType, isEventFuture, isEventPast, sortEventDay, sortEventTime, sortEventPrice, isDatesEqual};
+const encodeValue = (value) => {
+  return he.encode(value);
+};
+
+export {humanizeDate, hoursMinutesDate, yearMonthDate, fullDate, slashesFullDate, getEventDates, getEventDuration, getEventOffersByType, isEventFuture, isEventPast, sortEventDay, sortEventTime, sortEventPrice, isDatesEqual, encodeValue};
