@@ -146,7 +146,7 @@ export default class EventItemPresenter {
 
   #handleFormSubmit = (update) => {
     document.removeEventListener('keydown', this.#escKeyDownHandler);
-    
+
     const isMinorUpdate =
       this.#event.destination.name !== update.destination.name ||
       this.#event.basePrice !== update.basePrice ||
